@@ -1,0 +1,1359 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Takharoj</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@400;500;600;700&family=Great+Vibes&display=swap">
+<style>
+/* Layout: app only — the phone screen fills a real phone; on larger screens a single centered device frame, nothing around it.
+   App direction: Cupertino glass — frosted layers over a slow living aurora, navy depth, teal for property, sand for cars. */
+:root{
+  --bg:#E6ECEE; --panel:#FFFFFF; --ink:#0E1B2C; --muted:#5B6976; --line:#D3DCE0; --accent:#1F7A6E; --accent-soft:#DDF0EC;
+  --f-display:"Readex Pro","IBM Plex Sans Arabic",Tahoma,sans-serif;
+  --f-body:"IBM Plex Sans Arabic",-apple-system,Tahoma,"Segoe UI",sans-serif;
+  --f-script:"Great Vibes","Brush Script MT",cursive;
+  /* app (single deliberate look) */
+  --a-navy:#0B1626; --a-navy2:#14294A; --a-teal:#1F7A6E; --a-teal2:#2A9A88; --a-mint:#4FDDBF;
+  --a-sand:#B8925A; --a-sand-l:#EACB93; --a-ink:#0E1B2C; --a-muted:#66727F; --a-bg:#EDF2F3;
+  --a-red:#D2452F; --a-red-s:rgba(210,69,47,.10); --a-green:#13865A; --a-green-s:rgba(19,134,90,.11);
+  --g-fill:rgba(255,255,255,.58); --g-strong:rgba(255,255,255,.82); --g-stroke:rgba(255,255,255,.75);
+  --g-sep:rgba(14,27,44,.07); --g-shadow:0 10px 30px -14px rgba(14,27,44,.22),0 1px 0 rgba(255,255,255,.6) inset;
+  --g-blur:blur(22px) saturate(180%);
+  --gd-fill:rgba(255,255,255,.09); --gd-stroke:rgba(255,255,255,.18);
+  --sb:50px; --hb:26px;
+  --spring:cubic-bezier(.34,1.56,.64,1); --ease:cubic-bezier(.22,1,.36,1);
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#070E16; --panel:#0F1A26; --ink:#E5ECF1; --muted:#93A2AF; --line:#22323F; --accent:#4FDDBF; --accent-soft:#123833; color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#070E16; --panel:#0F1A26; --ink:#E5ECF1; --muted:#93A2AF; --line:#22323F; --accent:#4FDDBF; --accent-soft:#123833; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg); color:var(--ink); font-family:var(--f-body); margin:0}
+button,input,select{font:inherit; color:inherit}
+button{cursor:pointer; -webkit-tap-highlight-color:transparent}
+:focus-visible{outline:2px solid var(--accent); outline-offset:2px}
+
+/* ---------- stage: phone only ---------- */
+html,body{height:100%}
+body{overflow:hidden}
+.stage{position:fixed; inset:0; display:grid; place-items:center; padding:24px; background:var(--bg); overflow:auto}
+.phone{width:390px; height:844px; max-height:calc(100dvh - 48px); border-radius:56px; background:#090C10; padding:11px; position:relative;
+  box-shadow:0 40px 80px -30px rgba(11,22,38,.55),0 0 0 1.5px #2A3038 inset,0 0 0 4px #14181D inset}
+.app{touch-action:manipulation}
+/* screen only: the app screen itself, no device around it */
+.stage{background:var(--a-bg); padding:0}
+.stage:has(.app.dark){background:#081019}
+.phone{background:transparent; padding:0; border-radius:0; box-shadow:none; max-height:none}
+.stage .phone .app{border-radius:0}
+/* real phones: the app is the whole screen; the device draws its own status bar */
+@media (max-width:600px){
+  .stage{padding:0; background:var(--a-bg); display:block; overflow:hidden}
+  .phone{width:100%; height:100%; max-height:none; border-radius:0; padding:0; box-shadow:none; background:transparent}
+  .app{border-radius:0!important; --sb:calc(env(safe-area-inset-top,0px) + 8px); --hb:max(14px,env(safe-area-inset-bottom,0px))}
+  .sbar > *{display:none}
+  .app .inp input,.app .sx-in input{font-size:16px}
+}
+/* ---------- app shell ---------- */
+.app{direction:rtl; width:100%; height:100%; border-radius:46px; overflow:hidden; background:var(--a-bg); color:var(--a-ink); position:relative; font-size:14px; isolation:isolate}
+.app *{scrollbar-width:none}
+.app ::-webkit-scrollbar{display:none}
+.amb{position:absolute; inset:-20%; z-index:0; pointer-events:none}
+.amb i{position:absolute; border-radius:50%; filter:blur(50px); opacity:.65}
+.amb i:nth-child(1){width:60%; height:40%; top:8%; right:2%; background:#9FE8D7; animation:drift1 18s ease-in-out infinite alternate}
+.amb i:nth-child(2){width:55%; height:38%; top:44%; left:4%; background:#BFD3F2; animation:drift2 22s ease-in-out infinite alternate}
+.amb i:nth-child(3){width:45%; height:32%; bottom:4%; right:16%; background:#F4DDB2; animation:drift1 26s ease-in-out infinite alternate-reverse}
+.app.car .amb i:nth-child(1){background:#F1D7A6}
+.app.car .amb i:nth-child(3){background:#A9E6D8}
+@keyframes drift1{to{transform:translate(-18%,12%) scale(1.15)}}
+@keyframes drift2{to{transform:translate(16%,-10%) scale(1.1)}}
+
+.screen{position:absolute; inset:0; z-index:1}
+.screen.push{animation:push .45s var(--ease) both}
+.screen.pop{animation:pop .45s var(--ease) both}
+.screen.fade{animation:fadeIn .35s ease both}
+@keyframes push{from{transform:translateX(-28%); opacity:.3}to{transform:none; opacity:1}}
+@keyframes pop{from{transform:translateX(28%); opacity:.3}to{transform:none; opacity:1}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.splash.out{animation:spOut .45s var(--ease) both; pointer-events:none}
+@keyframes spOut{to{opacity:0; transform:scale(1.08); filter:blur(6px)}}
+.screen.enter{animation:enterIn .65s var(--ease) both}
+@keyframes enterIn{from{opacity:0; transform:scale(.95)}to{opacity:1; transform:none}}
+.splash{cursor:pointer}
+.scroll{position:absolute; inset:0; overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain}
+
+.glass{background:var(--g-fill); -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur); border:1px solid var(--g-stroke); box-shadow:var(--g-shadow)}
+.gtop{position:absolute; inset:0 0 auto 0; z-index:10; background:rgba(242,246,247,.66); -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur); border-bottom:.5px solid rgba(14,27,44,.1)}
+.gtop.float{transform:translateY(-100%); transition:transform .35s var(--ease)}
+.gtop.float.show{transform:none}
+.gbot{position:absolute; inset:auto 0 0 0; z-index:10}
+.sbar{height:var(--sb); display:flex; align-items:center; justify-content:space-between; padding:2px 32px 0 30px; font-weight:600; font-size:15.5px; direction:ltr; font-family:-apple-system,"SF Pro Text",var(--f-body)}
+.sbar .island{width:120px; height:34px; background:#000; border-radius:20px}
+.sbar .ic{display:flex; gap:6px; align-items:center}
+.sbar.light{color:#fff}
+.sbar.abs{position:absolute; inset:0 0 auto 0; z-index:11}
+.ahead{display:flex; align-items:center; justify-content:space-between; padding:2px 14px 10px; gap:10px; min-height:50px}
+.wm{display:flex; align-items:center; gap:8px; line-height:1}
+.wm .mk{width:30px; height:30px; border-radius:9px; display:grid; place-items:center; color:var(--a-mint); background:linear-gradient(160deg,#1B4068,var(--a-navy)); box-shadow:0 4px 10px -4px rgba(11,22,38,.5),0 1px 0 rgba(255,255,255,.18) inset}
+.app.car .wm .mk{color:var(--a-sand-l)}
+.wm .mk svg{width:19px; height:19px}
+.wm b{font-family:var(--f-display); font-weight:700; font-size:21px}
+.wm.light{color:#fff} .wm.light .mk{background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2)}
+.cbtn{width:38px; height:38px; display:grid; place-items:center; border-radius:50%; border:1px solid var(--g-stroke); background:var(--g-fill); -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur); color:var(--a-ink); position:relative; flex:none}
+.cbtn.dark{background:var(--gd-fill); border-color:var(--gd-stroke); color:#fff}
+.cbtn .dot{position:absolute; top:7px; right:8px; width:8px; height:8px; border-radius:50%; background:var(--a-red); box-shadow:0 0 0 2px var(--a-navy)}
+.navtitle{font-family:var(--f-display); font-weight:600; font-size:16px; display:flex; flex-direction:column; align-items:center; line-height:1.2}
+.navtitle small{font-family:var(--f-body); font-weight:500; font-size:11px; color:var(--a-muted)}
+.largetitle{padding:4px 18px 10px; font-family:var(--f-display); font-weight:700; font-size:30px; letter-spacing:-.01em; margin:0}
+
+svg.i{width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; stroke-linejoin:round; flex:none}
+svg.i.s{width:16px; height:16px} svg.i.xs{width:13px; height:13px; stroke-width:2.2} svg.i.l{width:24px; height:24px}
+
+/* iOS segmented */
+.seg{position:relative; display:grid; grid-template-columns:1fr 1fr; padding:3px; border-radius:12px; background:rgba(118,118,128,.14); margin:0 16px 10px}
+.seg .thumb-s{position:absolute; top:3px; bottom:3px; right:3px; width:calc(50% - 3px); border-radius:9px; background:#fff; box-shadow:0 3px 8px rgba(0,0,0,.12),0 0 1px rgba(0,0,0,.1); transition:transform .4s var(--spring)}
+.seg[data-i="1"] .thumb-s{transform:translateX(-100%)}
+.seg button{position:relative; z-index:1; border:0; background:transparent; padding:7px; font-weight:600; font-size:13px; display:flex; align-items:center; justify-content:center; gap:6px; color:var(--a-ink)}
+.seg.dark{background:rgba(255,255,255,.12)}
+.seg.dark button{color:rgba(255,255,255,.7)}
+.seg.dark button[aria-pressed="true"]{color:var(--a-navy)}
+
+/* tab bar */
+.tabbar{margin:0 18px var(--hb); height:56px; border-radius:22px; display:grid; grid-template-columns:repeat(5,1fr); align-items:center; padding:0 4px; position:relative}
+.tabbar button{border:0; background:transparent; display:flex; flex-direction:column; align-items:center; gap:2px; font-size:10px; font-weight:500; color:#76818C; padding:4px 0; position:relative; z-index:1; transition:color .25s}
+.tabbar button[aria-current="true"]{color:var(--a-teal); font-weight:600}
+.app.car .tabbar button[aria-current="true"]{color:#8A6430}
+.tabbar button svg.i{width:19px; height:19px}
+.tabbar .pillbg{position:absolute; top:6px; height:44px; width:calc((100% - 8px)/5); right:4px; border-radius:22px; background:rgba(31,122,110,.12); transition:transform .5s var(--spring); z-index:0}
+.app.car .tabbar .pillbg{background:rgba(184,146,90,.14)}
+.tabbar .mid{width:42px; height:42px; border-radius:14px; justify-self:center; display:grid; place-items:center; color:#fff;
+  background:linear-gradient(160deg,var(--a-teal2),var(--a-teal) 60%,#155E55); box-shadow:0 6px 14px -6px rgba(31,122,110,.7),0 1px 0 rgba(255,255,255,.3) inset; padding:0}
+.app.car .tabbar .mid{background:linear-gradient(160deg,#D4B077,var(--a-sand) 60%,#8A6430); box-shadow:0 6px 14px -6px rgba(184,146,90,.7),0 1px 0 rgba(255,255,255,.3) inset}
+.tabbar .mid svg.i{width:20px; height:20px; stroke-width:2.2}
+
+/* type + atoms */
+.h-display{font-family:var(--f-display); font-weight:700; letter-spacing:-.01em; text-wrap:balance; margin:0}
+.muted{color:var(--a-muted)}
+.num{font-variant-numeric:tabular-nums; font-family:var(--f-display); font-weight:600}
+.cur{font-size:.68em; font-weight:500; margin-inline-start:3px}
+.pad{padding:12px 16px 108px; display:flex; flex-direction:column; gap:18px}
+.card{background:var(--g-fill); -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur); border:1px solid var(--g-stroke); box-shadow:var(--g-shadow); border-radius:22px}
+.sec-t{display:flex; justify-content:space-between; align-items:center; gap:10px}
+.sec-t h3{font-family:var(--f-display); font-size:17px; margin:0; display:flex; align-items:center; gap:7px}
+.link{border:0; background:transparent; color:var(--a-teal); font-weight:600; font-size:13px; padding:0; display:inline-flex; align-items:center; gap:2px}
+.app.car .link{color:#8A6430}
+.btn{border:0; border-radius:15px; padding:13px 16px; font-weight:600; font-size:14.5px; display:inline-flex; align-items:center; justify-content:center; gap:8px; transition:transform .2s var(--spring)}
+.btn:active{transform:scale(.97)}
+.btn.pri{color:#fff; background:linear-gradient(170deg,var(--a-teal2),var(--a-teal) 55%,#176A5F); box-shadow:0 10px 20px -10px rgba(31,122,110,.8),0 1px 0 rgba(255,255,255,.3) inset}
+.app.car .btn.pri{background:linear-gradient(170deg,#CDA86E,var(--a-sand) 55%,#93703F); box-shadow:0 10px 20px -10px rgba(184,146,90,.8),0 1px 0 rgba(255,255,255,.3) inset}
+.btn.dark{background:var(--a-navy); color:#fff}
+.btn.gl{background:var(--g-strong); border:1px solid var(--g-stroke); color:var(--a-ink); -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur)}
+.btn.gl-d{background:var(--gd-fill); border:1px solid var(--gd-stroke); color:#fff; -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px)}
+.btn.block{width:100%}
+.pill{display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:600; padding:4px 9px; border-radius:999px; white-space:nowrap}
+.pill.ok{background:var(--a-green-s); color:var(--a-green)}
+.pill.feat{background:rgba(255,190,80,.18); color:#8A5A12}
+.pill.hot{background:var(--a-red-s); color:var(--a-red)}
+.pill.neu{background:rgba(118,118,128,.12); color:var(--a-muted)}
+.pill.glass{background:rgba(255,255,255,.78); -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px); color:var(--a-ink)}
+.pill.live{background:rgba(210,69,47,.12); color:var(--a-red)}
+.pulse{width:7px; height:7px; border-radius:50%; background:currentColor; position:relative}
+.pulse::after{content:""; position:absolute; inset:0; border-radius:50%; background:currentColor; animation:ping 1.6s ease-out infinite}
+@keyframes ping{to{transform:scale(3); opacity:0}}
+
+/* ---------- splash ---------- */
+.splash{position:absolute; inset:0; background:radial-gradient(120% 80% at 50% 30%,#163256 0%,var(--a-navy) 60%,#050B14 100%); color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px; overflow:hidden}
+.splash .aur{position:absolute; inset:-30%; pointer-events:none}
+.splash .aur i{position:absolute; border-radius:50%; filter:blur(60px); opacity:.55}
+.splash .aur i:nth-child(1){width:60%; height:50%; top:10%; left:10%; background:#1F7A6E; animation:spin 14s linear infinite; transform-origin:70% 60%}
+.splash .aur i:nth-child(2){width:50%; height:40%; bottom:12%; right:8%; background:#8A6430; animation:spin 18s linear infinite reverse; transform-origin:30% 40%}
+@keyframes spin{to{transform:rotate(360deg)}}
+.splash .grid{position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px); background-size:32px 32px; mask-image:radial-gradient(circle at 50% 40%,#000 0%,transparent 65%); -webkit-mask-image:radial-gradient(circle at 50% 40%,#000 0%,transparent 65%)}
+.emblem{position:relative; z-index:1; width:270px; animation:tileIn .8s var(--spring) both}
+.emblem svg{width:100%; height:auto; display:block; overflow:visible}
+.emblem .tw path{stroke-dasharray:420; animation:draw2 1.1s var(--ease) both}
+.emblem .tw path:nth-child(2){animation-delay:.1s} .emblem .tw path:nth-child(3){animation-delay:.2s} .emblem .tw path:nth-child(4){animation-delay:.3s}
+.emblem .win{animation:fadeIn .6s .7s ease both}
+.emblem .car{animation:carIn .8s .55s var(--ease) both}
+.emblem .beam{animation:beam 2.4s 1.2s ease-in-out infinite both}
+.emblem::after{content:""; position:absolute; inset:0; background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.18) 50%,transparent 65%); background-size:250% 100%; animation:sheen 3s 1.4s ease-in-out infinite; pointer-events:none; mix-blend-mode:screen}
+@keyframes draw2{from{stroke-dashoffset:420; fill-opacity:0}60%{fill-opacity:0}to{stroke-dashoffset:0; fill-opacity:1}}
+@keyframes carIn{from{transform:translateX(-70px); opacity:0}to{transform:none; opacity:1}}
+@keyframes beam{0%,100%{opacity:.08}50%{opacity:.26}}
+.sp-word{position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:10px}
+.sp-name{display:flex; flex-direction:column; align-items:center; gap:8px}
+.sp-name .ar{font-family:var(--f-display); font-weight:700; font-size:54px; line-height:1.15; animation:revealAr .8s .9s var(--ease) both}
+@keyframes revealAr{from{clip-path:inset(0 0 0 100%); transform:translateY(10px)}to{clip-path:inset(0 0 0 0); transform:none}}
+.sp-name .en{display:flex; gap:.34em; direction:ltr; font-family:var(--f-display); font-weight:500; font-size:13px; color:#D4AF6A}
+.sp-name .en span{display:inline-block; animation:letter .6s var(--spring) both}
+@keyframes letter{from{transform:translateY(24px); opacity:0}to{transform:none; opacity:1}}
+@keyframes write{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+.sp-tag{font-size:14px; color:rgba(255,255,255,.72); animation:rise .6s 1.55s var(--ease) both; text-align:center; line-height:1.8}
+.sp-chips{display:flex; gap:8px; animation:rise .6s 1.7s var(--ease) both}
+.sp-chips span{display:inline-flex; align-items:center; gap:6px; font-size:12px; padding:6px 12px; border-radius:99px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.16)}
+.sp-load{position:absolute; bottom:calc(var(--hb) + 48px); width:120px; height:3px; border-radius:2px; background:rgba(255,255,255,.12); overflow:hidden}
+.sp-load i{position:absolute; inset:0; background:linear-gradient(90deg,var(--a-mint),var(--a-sand-l)); transform-origin:right; animation:load 2.9s var(--ease) both}
+@keyframes load{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.sp-foot{position:absolute; bottom:calc(var(--hb) + 14px); font-size:11px; color:rgba(255,255,255,.4); letter-spacing:.04em}
+@keyframes rise{from{opacity:0; transform:translateY(14px)}to{opacity:1; transform:none}}
+
+/* ---------- onboarding ---------- */
+.onb{position:absolute; inset:0; background:radial-gradient(120% 70% at 50% 0%,#17345A 0%,var(--a-navy) 55%,#050B14 100%); color:#fff; display:flex; flex-direction:column; overflow:hidden; touch-action:pan-y}
+.onb .aur{position:absolute; inset:-20%; pointer-events:none}
+.onb .aur i{position:absolute; border-radius:50%; filter:blur(60px); opacity:.45; transition:all 1s var(--ease)}
+.onb .aur i:nth-child(1){width:55%; height:40%; top:8%; right:5%; background:#1F7A6E; animation:drift1 12s ease-in-out infinite alternate}
+.onb .aur i:nth-child(2){width:45%; height:35%; top:35%; left:0; background:#2B4F8A; animation:drift2 15s ease-in-out infinite alternate}
+.onb[data-s="1"] .aur i:nth-child(1){background:#2A6FA8}
+.onb[data-s="2"] .aur i:nth-child(1){background:#13865A}
+.onb[data-s="3"] .aur i:nth-child(1){background:#8A6430}
+.onb-top{position:relative; z-index:2; display:flex; justify-content:space-between; align-items:center; padding:4px 20px 0}
+.skip{border:0; background:rgba(255,255,255,.1); color:#fff; border-radius:99px; padding:7px 14px; font-size:13px; font-weight:600; -webkit-backdrop-filter:blur(12px); backdrop-filter:blur(12px)}
+.onb-stage{position:relative; z-index:1; flex:1; display:flex; flex-direction:column; padding:10px 24px 0; gap:22px; min-height:0}
+.ill{height:330px; position:relative; display:grid; place-items:center; flex:none}
+.onb-copy{display:flex; flex-direction:column; gap:10px}
+.onb-copy .eb{font-size:12px; font-weight:600; color:var(--a-mint); letter-spacing:.02em; animation:rise .6s .1s var(--ease) both}
+.onb-copy h2{font-size:28px; line-height:1.35; animation:rise .6s .18s var(--ease) both}
+.onb-copy h2 em{font-style:normal; color:var(--a-mint)}
+.onb-copy p{margin:0; color:rgba(255,255,255,.7); line-height:1.85; font-size:14px; animation:rise .6s .26s var(--ease) both}
+.onb-foot{position:relative; z-index:2; display:flex; align-items:center; justify-content:space-between; padding:16px 24px calc(var(--hb) + 14px); gap:12px}
+.dots{display:flex; gap:6px}
+.dots i{height:7px; width:7px; border-radius:4px; background:rgba(255,255,255,.25); transition:width .45s var(--spring),background .3s}
+.dots i.on{width:26px; background:var(--a-mint)}
+.nextb{height:58px; border:0; border-radius:29px; padding:0 22px 0 7px; display:inline-flex; align-items:center; gap:14px; color:#fff; font-weight:600; font-size:15.5px; position:relative; overflow:hidden;
+  background:linear-gradient(160deg,rgba(255,255,255,.2),rgba(255,255,255,.06)); border:1px solid rgba(255,255,255,.24); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px);
+  box-shadow:0 18px 34px -16px rgba(0,0,0,.7),0 1px 0 rgba(255,255,255,.3) inset; transition:transform .25s var(--spring)}
+.nextb:active{transform:scale(.96)}
+.nextb::before{content:""; position:absolute; inset:0; background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%); background-size:250% 100%; animation:sheen 3.2s 1s ease-in-out infinite}
+.nextb .go{width:44px; height:44px; border-radius:50%; display:grid; place-items:center; color:var(--a-navy); background:linear-gradient(160deg,#9AF5E0,var(--a-mint)); box-shadow:0 6px 16px -6px rgba(79,221,191,.9)}
+.nextb .go svg{animation:nudge 1.6s ease-in-out infinite}
+@keyframes nudge{50%{transform:translateX(-4px)}}
+.nextb.start{padding:0 26px 0 7px}
+.nextb .lbl{position:relative}
+/* illustrations */
+.gcard{background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.05)); border:1px solid rgba(255,255,255,.2); -webkit-backdrop-filter:blur(18px); backdrop-filter:blur(18px); border-radius:24px; box-shadow:0 30px 50px -24px rgba(0,0,0,.6),0 1px 0 rgba(255,255,255,.25) inset}
+.ill1 .gcard{width:250px; padding:20px; display:flex; flex-direction:column; gap:12px; animation:floatIn .8s var(--spring) both}
+@keyframes floatIn{from{transform:translateY(40px) scale(.9); opacity:0}to{transform:none; opacity:1}}
+.ill1 .lbl{font-size:12px; color:rgba(255,255,255,.65)}
+.ill1 .big{font-size:34px; color:#fff}
+.ill1 .bar{height:8px; border-radius:4px; background:rgba(255,255,255,.12); overflow:hidden}
+.ill1 .bar i{display:block; height:100%; width:100%; background:linear-gradient(90deg,var(--a-mint),#9AF0DD); transform-origin:right; animation:load 1.6s .5s var(--ease) both}
+.ill1 .row{display:flex; justify-content:space-between; font-size:12px; color:rgba(255,255,255,.7)}
+.coin{position:absolute; width:46px; height:46px; border-radius:50%; display:grid; place-items:center; font-family:var(--f-display); font-weight:700; font-size:13px; color:#6B4A14;
+  background:radial-gradient(circle at 35% 30%,#FFF1C9,#E9C27A 60%,#B88A3E); box-shadow:0 10px 20px -8px rgba(0,0,0,.5),0 0 0 3px rgba(255,255,255,.15); animation:bob 3s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-12px) rotate(8deg)}}
+.zero{position:absolute; bottom:18px; left:22px; animation:pop .6s 1.4s var(--spring) both}
+@keyframes popIn{from{transform:scale(.3); opacity:0}to{transform:none; opacity:1}}
+.zero{animation-name:popIn}
+.ill2 .bars2{display:flex; align-items:flex-end; gap:26px; height:230px}
+.ill2 .col{display:flex; flex-direction:column; align-items:center; gap:10px; font-size:12px; color:rgba(255,255,255,.7)}
+.ill2 .colb{width:78px; border-radius:18px 18px 8px 8px; transform-origin:bottom; animation:grow 1s var(--spring) both; position:relative}
+.ill2 .colb.m{height:210px; background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,.08)); border:1px solid rgba(255,255,255,.2)}
+.ill2 .colb.c{height:170px; background:linear-gradient(180deg,var(--a-mint),#1F7A6E); animation-delay:.25s}
+.ill2 .colb b{position:absolute; top:-28px; left:50%; transform:translateX(-50%); white-space:nowrap; font-family:var(--f-display); font-size:13px; color:#fff}
+@keyframes grow{from{transform:scaleY(0)}to{transform:none}}
+.gainb{position:absolute; top:46px; left:36px; padding:10px 14px; border-radius:16px; background:#fff; color:var(--a-green); font-family:var(--f-display); font-weight:700; font-size:18px; box-shadow:0 18px 30px -12px rgba(0,0,0,.5); animation:popIn .6s 1.1s var(--spring) both}
+.gainb small{display:block; font-family:var(--f-body); font-size:11px; color:var(--a-muted); font-weight:500}
+.ill3 .gcard{width:260px; padding:18px; display:flex; flex-direction:column; gap:12px; position:relative; overflow:hidden; animation:floatIn .8s var(--spring) both}
+.ill3 .doc{display:flex; align-items:center; gap:10px; font-size:13px}
+.ill3 .doc .ck{width:26px; height:26px; border-radius:50%; display:grid; place-items:center; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); color:transparent; animation:tick .4s var(--spring) both}
+.ill3 .doc:nth-child(2) .ck{animation-delay:.7s} .ill3 .doc:nth-child(3) .ck{animation-delay:1.1s} .ill3 .doc:nth-child(4) .ck{animation-delay:1.5s} .ill3 .doc:nth-child(5) .ck{animation-delay:1.9s}
+@keyframes tick{from{background:rgba(255,255,255,.1); color:transparent; transform:scale(.7)}to{background:var(--a-mint); color:var(--a-navy); transform:none; border-color:var(--a-mint)}}
+.ill3 .doc .ck{background:var(--a-mint); color:var(--a-navy); border-color:var(--a-mint)}
+.ill3 .doc span:last-child{margin-inline-start:auto; font-size:11px; color:rgba(255,255,255,.55)}
+.ill3 .scanl{position:absolute; inset:0 0 auto 0; height:60px; background:linear-gradient(180deg,transparent,rgba(79,221,191,.25),transparent); animation:scan 2.4s ease-in-out infinite; pointer-events:none}
+@keyframes scan{from{transform:translateY(-60px)}to{transform:translateY(260px)}}
+.ill3 .seal{position:absolute; top:4px; right:20px; width:70px; height:70px; border-radius:50%; display:grid; place-items:center; background:rgba(79,221,191,.16); border:1px dashed rgba(79,221,191,.6); color:var(--a-mint); animation:spin 12s linear infinite}
+.vpick{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.vp{border:1.5px solid rgba(255,255,255,.14); background:rgba(255,255,255,.06); color:#fff; border-radius:22px; padding:16px 14px; display:flex; flex-direction:column; gap:8px; text-align:start; -webkit-backdrop-filter:blur(16px); backdrop-filter:blur(16px); transition:transform .3s var(--spring),border-color .3s,background .3s}
+.vp[aria-pressed="true"]{border-color:var(--a-mint); background:rgba(79,221,191,.12); transform:translateY(-3px)}
+.vp .ico{width:44px; height:44px; border-radius:14px; display:grid; place-items:center; background:rgba(255,255,255,.1); color:var(--a-mint)}
+.vp b{font-size:15px} .vp span{font-size:11.5px; color:rgba(255,255,255,.62); line-height:1.6}
+.rpick{display:flex; flex-direction:column; gap:8px}
+.rp{display:flex; align-items:center; gap:12px; border:1.5px solid rgba(255,255,255,.14); background:rgba(255,255,255,.04); color:#fff; border-radius:18px; padding:13px 14px; text-align:start; transition:border-color .3s,background .3s}
+.rp[aria-pressed="true"]{border-color:var(--a-mint); background:rgba(79,221,191,.1)}
+.rp .rad{width:20px; height:20px; border-radius:50%; border:2px solid rgba(255,255,255,.4); flex:none; transition:border-width .3s var(--spring)}
+.rp[aria-pressed="true"] .rad{border:6px solid var(--a-mint)}
+.rp b{font-size:14px; display:block; color:#fff} .rp span{font-size:11.5px; color:rgba(255,255,255,.6)}
+
+/* ---------- home ---------- */
+.banner{position:relative; height:356px; color:#fff; overflow:hidden; background:var(--a-navy)}
+.banner .slides{position:absolute; inset:0}
+.bslide{position:absolute; inset:0; opacity:0; transition:opacity .9s ease; pointer-events:none}
+.bslide.on{opacity:1; pointer-events:auto}
+.bslide svg.bart{position:absolute; inset:0; width:100%; height:100%}
+.banner::after{content:""; position:absolute; inset:0; background:linear-gradient(180deg,rgba(11,22,38,.55) 0%,rgba(11,22,38,0) 30%,rgba(11,22,38,.15) 60%,rgba(11,22,38,.85) 100%); pointer-events:none}
+.bcopy{position:absolute; inset:auto 18px 76px 18px; z-index:2; display:flex; flex-direction:column; gap:6px}
+.bslide.on .bcopy > *{animation:rise .7s var(--ease) both}
+.bslide.on .bcopy > *:nth-child(2){animation-delay:.08s} .bslide.on .bcopy > *:nth-child(3){animation-delay:.16s} .bslide.on .bcopy > *:nth-child(4){animation-delay:.24s}
+.bcopy .eb{display:inline-flex; align-self:flex-start; align-items:center; gap:6px; font-size:11.5px; font-weight:600; padding:5px 10px; border-radius:99px; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.22); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px)}
+.bcopy h2{font-size:25px; line-height:1.35}
+.bcopy p{margin:0; font-size:13px; color:rgba(255,255,255,.78)}
+.bcopy .bcta{align-self:flex-start; margin-top:6px; padding:9px 14px; font-size:13px}
+.btop{position:absolute; inset:var(--sb) 14px auto 14px; z-index:3; display:flex; align-items:center; justify-content:space-between}
+.bprog{position:absolute; z-index:3; inset:auto 18px 58px 18px; display:flex; gap:5px}
+.bprog i{flex:1; height:3px; border-radius:2px; background:rgba(255,255,255,.25); overflow:hidden; position:relative}
+.bprog i b{position:absolute; inset:0; background:#fff; transform-origin:right; transform:scaleX(0)}
+.bprog i.done b{transform:scaleX(1)}
+.bprog i.on b{animation:load 5s linear both}
+.greet{font-size:12.5px; color:rgba(255,255,255,.75); display:flex; flex-direction:column; align-items:center; line-height:1.3}
+.greet b{color:#fff; font-size:14px}
+.searchwrap{position:relative; z-index:5; margin:-30px 16px 0}
+.sfield{height:58px; border-radius:20px; display:flex; align-items:center; gap:10px; padding:0 8px 0 16px; width:100%; text-align:start; color:var(--a-muted); font-size:14px;
+  background:rgba(255,255,255,.8); -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur); border:1px solid var(--g-stroke); box-shadow:0 18px 40px -18px rgba(11,22,38,.45),0 1px 0 #fff inset}
+.sfield .ph{flex:1; overflow:hidden; height:22px; position:relative}
+.sfield .ph span{position:absolute; inset:0; white-space:nowrap; animation:phRoll .5s var(--ease) both}
+@keyframes phRoll{from{transform:translateY(100%); opacity:0}to{transform:none; opacity:1}}
+.sfield .fil{width:42px; height:42px; border-radius:14px; display:grid; place-items:center; color:#fff; background:var(--a-navy)}
+.ticker{display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:16px; overflow:hidden}
+.ticker .tx{flex:1; height:20px; overflow:hidden; position:relative; font-size:12.5px}
+.ticker .tx span{position:absolute; inset:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; animation:phRoll .55s var(--ease) both}
+.ticker time{font-size:11px; color:var(--a-muted)}
+.quick{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
+.qa{border:0; background:transparent; display:flex; flex-direction:column; align-items:center; gap:7px; font-size:11.5px; font-weight:600; color:var(--a-ink); padding:0}
+.qa .t{width:58px; height:58px; border-radius:20px; display:grid; place-items:center; transition:transform .3s var(--spring)}
+.qa:active .t{transform:scale(.9)}
+.qa .t svg{width:24px; height:24px}
+.qa:nth-child(1) .t{color:var(--a-teal)} .qa:nth-child(2) .t{color:#2B5FA8} .qa:nth-child(3) .t{color:#8A6430} .qa:nth-child(4) .t{color:#B5452F}
+.hscroll{display:flex; gap:12px; overflow-x:auto; scroll-snap-type:x mandatory; margin:0 -16px; padding:4px 16px 14px; scroll-padding:0 16px}
+.fcard{flex:none; width:262px; scroll-snap-align:start; overflow:hidden; text-align:start; padding:0; cursor:pointer; transition:transform .35s var(--spring)}
+.fcard:active{transform:scale(.97)}
+.fcard .thumb{aspect-ratio:16/10}
+.fcard .fb{padding:12px 14px 14px; display:flex; flex-direction:column; gap:8px}
+.fcard h4{margin:0; font-family:var(--f-display); font-size:15px}
+.fcard .row{display:flex; justify-content:space-between; align-items:flex-end; gap:8px}
+.fcard .row small{display:block; font-size:11px; color:var(--a-muted)}
+.gainchip{display:inline-flex; align-items:center; gap:4px; font-family:var(--f-display); font-weight:600; font-size:13px; color:var(--a-green); background:var(--a-green-s); padding:4px 9px; border-radius:10px}
+.thumb{position:relative; aspect-ratio:16/9; max-width:100%; overflow:hidden; background:#DDE6E8}
+.thumb svg.art{width:100%; height:100%; display:block}
+.thumb .tb{position:absolute; top:10px; right:10px; display:flex; gap:6px; flex-wrap:wrap}
+.thumb .tr{position:absolute; top:10px; left:10px}
+.sheenx::after{content:""; position:absolute; inset:0; background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.45) 50%,transparent 65%); background-size:250% 100%; animation:sheen 4s ease-in-out infinite; pointer-events:none}
+.fav{width:34px; height:34px; border-radius:50%; border:0; background:rgba(255,255,255,.78); -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px); display:grid; place-items:center; color:var(--a-ink); transition:transform .3s var(--spring)}
+.fav[aria-pressed="true"]{color:var(--a-red)}
+.fav[aria-pressed="true"] svg{fill:currentColor}
+.fav.bump{animation:bump .45s var(--spring)}
+@keyframes bump{40%{transform:scale(1.3)}}
+.mcalc{padding:16px; display:flex; flex-direction:column; gap:12px}
+.mcalc .top{display:flex; justify-content:space-between; align-items:baseline}
+.mcalc .top b{font-size:22px}
+.rng{-webkit-appearance:none; appearance:none; width:100%; height:6px; border-radius:3px; background:linear-gradient(to left,var(--a-teal) var(--p,40%),rgba(118,118,128,.2) var(--p,40%)); outline:0; margin:6px 0}
+.app.car .rng{background:linear-gradient(to left,var(--a-sand) var(--p,40%),rgba(118,118,128,.2) var(--p,40%))}
+.rng::-webkit-slider-thumb{-webkit-appearance:none; width:28px; height:28px; border-radius:50%; background:#fff; box-shadow:0 3px 10px rgba(0,0,0,.2),0 0 0 .5px rgba(0,0,0,.06); cursor:grab}
+.rng::-moz-range-thumb{width:28px; height:28px; border-radius:50%; background:#fff; border:0; box-shadow:0 3px 10px rgba(0,0,0,.2)}
+.cmp{display:flex; flex-direction:column; gap:10px}
+.cmp .r{display:grid; grid-template-columns:78px 1fr auto; gap:10px; align-items:center; font-size:12px}
+.cmp .tr{height:12px; border-radius:6px; background:rgba(118,118,128,.14); overflow:hidden}
+.cmp .tr i{display:block; height:100%; border-radius:6px; transition:width .6s var(--spring)}
+.cmp .tr i.bad{background:linear-gradient(90deg,#F08A73,var(--a-red))}
+.cmp .tr i.good{background:linear-gradient(90deg,var(--a-mint),var(--a-teal))}
+.app.car .cmp .tr i.good{background:linear-gradient(90deg,var(--a-sand-l),var(--a-sand))}
+.cmp .r b{font-variant-numeric:tabular-nums; font-family:var(--f-display); font-weight:600; min-width:74px; text-align:end}
+.dpill{display:flex; justify-content:space-between; align-items:center; padding:12px 14px; border-radius:16px; background:var(--a-navy); color:#fff}
+.dpill small{color:rgba(255,255,255,.7); font-size:12px}
+.dpill .num{font-size:20px; color:var(--a-mint)}
+.app.car .dpill .num{color:var(--a-sand-l)}
+.cats{display:grid; grid-template-columns:repeat(4,1fr); gap:10px}
+.cat{border:0; padding:12px 4px; display:flex; flex-direction:column; align-items:center; gap:6px; font-size:12px; font-weight:600; border-radius:20px}
+.cat .ci{width:40px; height:40px; border-radius:13px; display:grid; place-items:center; background:rgba(31,122,110,.1); color:var(--a-teal)}
+.app.car .cat .ci{background:rgba(184,146,90,.15); color:#8A6430}
+.cat small{font-size:10.5px; color:var(--a-muted); font-weight:500}
+.stats{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.stat{padding:14px; display:flex; flex-direction:column; gap:2px; overflow:hidden; position:relative}
+.stat .v{font-size:24px}
+.stat small{font-size:11.5px; color:var(--a-muted)}
+.stat svg.spark{width:100%; height:34px; margin-top:6px}
+.stat svg.spark path.l{fill:none; stroke:var(--a-teal); stroke-width:2; stroke-dasharray:300; animation:draw 1.8s .3s var(--ease) both}
+.app.car .stat svg.spark path.l{stroke:var(--a-sand)}
+.stat svg.spark path.a{fill:url(#sparkFill); opacity:.5}
+.flow{padding:16px; display:flex; flex-direction:column; gap:14px}
+.flow .track{position:relative; display:grid; grid-template-columns:repeat(5,1fr)}
+.flow .line{position:absolute; top:17px; right:10%; left:10%; height:3px; border-radius:2px; background:rgba(118,118,128,.18); overflow:hidden}
+.flow .line i{position:absolute; inset:0; background:linear-gradient(90deg,var(--a-mint),var(--a-teal)); transform-origin:right; transform:scaleX(var(--f,0)); transition:transform .8s var(--ease)}
+.app.car .flow .line i{background:linear-gradient(90deg,var(--a-sand-l),var(--a-sand))}
+.flow .st{position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center; font-size:11px; font-weight:600}
+.flow .st .k{width:36px; height:36px; border-radius:50%; display:grid; place-items:center; background:#fff; border:2px solid rgba(118,118,128,.25); color:var(--a-muted); font-family:var(--f-display); transition:all .4s var(--spring)}
+.flow .st.on .k{border-color:var(--a-teal); background:var(--a-teal); color:#fff; transform:scale(1.08)}
+.app.car .flow .st.on .k{border-color:var(--a-sand); background:var(--a-sand)}
+.flow .desc{font-size:12.5px; color:var(--a-muted); line-height:1.7; min-height:42px; text-align:center}
+.flow .desc b{color:var(--a-ink)}
+.trust{display:flex; flex-direction:column}
+.trust .tr2{display:flex; gap:12px; align-items:flex-start; padding:13px 16px; border-top:1px solid var(--g-sep)}
+.trust .tr2:first-child{border-top:0}
+.trust .ti{width:34px; height:34px; border-radius:11px; display:grid; place-items:center; background:rgba(31,122,110,.1); color:var(--a-teal); flex:none}
+.app.car .trust .ti{background:rgba(184,146,90,.15); color:#8A6430}
+.trust b{font-size:13.5px; display:block}
+.trust span{font-size:12px; color:var(--a-muted); line-height:1.65}
+.appcta{position:relative; overflow:hidden; border-radius:24px; padding:18px; color:#fff; background:linear-gradient(150deg,#14294A,var(--a-navy)); display:flex; flex-direction:column; gap:10px}
+.appcta::before{content:""; position:absolute; width:200px; height:200px; border-radius:50%; left:-60px; top:-80px; background:radial-gradient(closest-side,rgba(79,221,191,.35),transparent); animation:drift1 8s ease-in-out infinite alternate}
+.appcta > *{position:relative}
+.appcta p{margin:0; font-size:12.5px; color:rgba(255,255,255,.75); line-height:1.7}
+.notif-toast{position:absolute; z-index:30; top:calc(var(--sb) + 2px); left:10px; right:10px; padding:12px 14px; border-radius:22px; display:flex; gap:12px; align-items:center;
+  background:rgba(255,255,255,.82); -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur); border:1px solid var(--g-stroke); box-shadow:0 20px 40px -16px rgba(11,22,38,.45); animation:toast 4.6s var(--ease) both; cursor:pointer}
+@keyframes toast{0%{transform:translateY(-140%)}10%,85%{transform:none}100%{transform:translateY(-140%)}}
+.notif-toast .ai{width:38px; height:38px; border-radius:10px; background:var(--a-navy); display:grid; place-items:center; flex:none}
+.notif-toast b{font-size:13px; display:block} .notif-toast span{font-size:12px; color:var(--a-muted)}
+.notif-toast time{font-size:11px; color:var(--a-muted); margin-inline-start:auto; align-self:flex-start}
+
+/* search overlay */
+.sx{position:absolute; inset:0; z-index:40; background:rgba(237,242,243,.72); -webkit-backdrop-filter:blur(30px) saturate(180%); backdrop-filter:blur(30px) saturate(180%); display:flex; flex-direction:column; animation:fadeIn .25s ease both}
+.sx-h{display:flex; gap:10px; align-items:center; padding:calc(var(--sb) + 4px) 14px 10px}
+.sx-in{flex:1; height:44px; border-radius:14px; display:flex; align-items:center; gap:8px; padding:0 12px; background:rgba(118,118,128,.14); color:var(--a-muted)}
+.sx-in input{flex:1; min-width:0; border:0; outline:0; background:transparent; font-size:15px; color:var(--a-ink)}
+.sx-c{border:0; background:transparent; color:var(--a-teal); font-weight:600; font-size:15px}
+.sx-b{flex:1; overflow-y:auto; padding:6px 16px 40px; display:flex; flex-direction:column; gap:18px}
+.sx-b h5{margin:0 0 8px; font-size:13px; color:var(--a-muted); font-weight:600}
+.sx-chips{display:flex; gap:8px; flex-wrap:wrap}
+.sres{display:flex; gap:12px; align-items:center; padding:10px 12px; text-align:start; border:0; width:100%; animation:rise .35s var(--ease) both}
+.sres .th{width:56px; height:42px; border-radius:10px; overflow:hidden; flex:none}
+.sres b{font-size:13.5px; display:block} .sres span{font-size:12px; color:var(--a-muted)}
+.sres .num{margin-inline-start:auto; color:var(--a-green); font-size:13px}
+mark{background:rgba(79,221,191,.35); color:inherit; border-radius:3px; padding:0 1px}
+
+/* list + detail + forms (glass versions) */
+.chips{display:flex; gap:8px; overflow-x:auto; margin:0 -16px; padding:0 16px}
+.chip{flex:none; border:1px solid var(--g-stroke); background:var(--g-fill); -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px); padding:7px 13px; border-radius:999px; font-size:12.5px; font-weight:500; color:var(--a-ink); transition:background .25s,color .25s}
+.chip[aria-pressed="true"]{background:var(--a-navy); border-color:var(--a-navy); color:#fff}
+.lsearch{display:flex; gap:8px; align-items:center}
+.lsearch .sfield{height:46px; border-radius:14px; box-shadow:none; background:rgba(118,118,128,.12); border-color:transparent; -webkit-backdrop-filter:none; backdrop-filter:none; padding:0 12px; font-size:13px}
+.fbtn{height:46px; padding:0 14px; display:inline-flex; align-items:center; gap:6px; border-radius:14px; font-weight:600; font-size:13px; border:1px solid var(--g-stroke); background:var(--g-fill)}
+.lcard{overflow:hidden; display:flex; flex-direction:column; text-align:start; padding:0; cursor:pointer; animation:rise .5s var(--ease) both}
+.lcard:nth-of-type(2){animation-delay:.06s} .lcard:nth-of-type(3){animation-delay:.12s} .lcard:nth-of-type(4){animation-delay:.18s}
+.lbody{padding:14px 16px 16px; display:flex; flex-direction:column; gap:10px}
+.ltitle{display:flex; justify-content:space-between; align-items:flex-start; gap:8px}
+.ltitle h4{font-family:var(--f-display); font-size:15.5px; margin:0}
+.ltitle .code{font-size:11px; color:var(--a-muted); font-variant-numeric:tabular-nums; direction:ltr}
+.meta{font-size:12.5px; color:var(--a-muted)}
+.price{display:flex; justify-content:space-between; align-items:flex-end; gap:10px; padding:12px; background:rgba(255,255,255,.55); border-radius:14px; border:1px solid rgba(255,255,255,.7)}
+.price small{display:block; font-size:11.5px; color:var(--a-muted); margin-bottom:2px}
+.price .cash{font-size:20px}
+.price .gain{color:var(--a-green); font-size:14px; text-align:end}
+.mini{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
+.mini div{display:flex; flex-direction:column; gap:2px; font-size:11px; color:var(--a-muted)}
+.mini b{font-size:12.5px; color:var(--a-ink); font-variant-numeric:tabular-nums; font-weight:600}
+.dhero{position:relative; height:330px; overflow:hidden}
+.dhero .thumb{position:absolute; inset:0; aspect-ratio:auto; height:100%}
+.dhero .over{position:absolute; inset:auto 16px 44px 16px; display:flex; gap:6px; flex-wrap:wrap; z-index:2}
+.dsheet{position:relative; margin-top:-28px; border-radius:28px 28px 0 0; background:rgba(237,242,243,.85); -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur); z-index:3}
+.dtop{position:absolute; inset:calc(var(--sb) + 2px) 14px auto 14px; z-index:11; display:flex; justify-content:space-between}
+.dtop .g{display:flex; gap:8px}
+.vlist{display:flex; flex-direction:column; gap:10px; padding:14px 16px}
+.vitem{display:flex; align-items:center; gap:10px; font-size:13px}
+.vitem .c{width:24px; height:24px; border-radius:50%; background:var(--a-green-s); color:var(--a-green); display:grid; place-items:center}
+.vitem span:last-child{margin-inline-start:auto; font-size:11.5px; color:var(--a-muted)}
+.table{display:flex; flex-direction:column; overflow:hidden}
+.table .r{display:flex; justify-content:space-between; gap:10px; padding:12px 16px; border-top:1px solid var(--g-sep); font-size:13px}
+.table .r:first-child{border-top:0}
+.table .r.total{background:var(--a-green-s); color:var(--a-green); font-weight:700}
+.table .r.hl{background:rgba(31,122,110,.07)}
+.bars{padding:14px 16px; display:flex; flex-direction:column; gap:10px}
+.bar{display:grid; grid-template-columns:76px 1fr; gap:10px; align-items:center; font-size:12px}
+.bar .track{height:12px; background:rgba(118,118,128,.14); border-radius:6px; overflow:hidden; display:flex}
+.bar .track i{transform-origin:right; animation:grow2 1s var(--ease) both}
+@keyframes grow2{from{transform:scaleX(0)}to{transform:none}}
+.bar .seg1{background:var(--seg1)} .bar .seg2{background:#9DB0BE} .bar .seg3{background:var(--a-mint)}
+.legend{display:flex; gap:12px; flex-wrap:wrap; font-size:11px; color:var(--a-muted)}
+.legend i{display:inline-block; width:9px; height:9px; border-radius:3px; margin-inline-end:5px; vertical-align:middle}
+.sched{display:flex; flex-direction:column}
+.sched .r{display:grid; grid-template-columns:1fr auto auto; gap:12px; padding:11px 16px; border-top:1px solid var(--g-sep); font-size:12.5px; align-items:center}
+.sched .r:first-child{border-top:0}
+.ctabar{display:grid; grid-template-columns:auto 1fr; gap:10px; padding:12px 16px var(--hb); background:rgba(242,246,247,.72); -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur); border-top:.5px solid rgba(14,27,44,.1)}
+.ring{--p:94; width:76px; height:76px; border-radius:50%; background:conic-gradient(var(--a-green) calc(var(--p)*1%),rgba(118,118,128,.18) 0); display:grid; place-items:center; flex:none}
+.ring div{width:62px; height:62px; border-radius:50%; background:#F4F7F8; display:grid; place-items:center; font-family:var(--f-display); font-weight:700; font-size:19px}
+.insp{display:flex; gap:14px; align-items:center; padding:14px 16px}
+.insp ul{margin:0; padding:0; list-style:none; display:flex; flex-direction:column; gap:6px; font-size:12.5px}
+.insp li{display:flex; align-items:center; gap:6px}
+.rate{display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:0 16px 16px}
+.rate div{border-radius:14px; padding:10px 12px; display:flex; flex-direction:column; gap:2px; font-size:11.5px}
+.rate .old{background:var(--a-green-s); color:var(--a-green)}
+.rate .new{background:rgba(118,118,128,.1); color:var(--a-muted)}
+.rate b{font-family:var(--f-display); font-size:20px}
+.note{font-size:11.5px; color:var(--a-muted); line-height:1.75; padding:0 2px; margin:0}
+.delta{background:linear-gradient(150deg,#14294A,var(--a-navy)); color:#fff; border-radius:20px; padding:15px 16px; display:flex; justify-content:space-between; align-items:center; gap:10px; position:relative; overflow:hidden}
+.delta::after{content:""; position:absolute; width:140px; height:140px; left:-40px; top:-60px; border-radius:50%; background:radial-gradient(closest-side,rgba(79,221,191,.3),transparent)}
+.delta small{color:rgba(255,255,255,.7); font-size:12px}
+.delta .num{font-size:22px; color:var(--a-mint)}
+.app.car .delta .num{color:var(--a-sand-l)}
+.tabs2{position:relative; display:grid; grid-template-columns:1fr 1fr; padding:3px; border-radius:12px; background:rgba(118,118,128,.14)}
+.tabs2 button{border:0; background:transparent; padding:9px; border-radius:9px; font-weight:600; font-size:13.5px; color:var(--a-ink); transition:background .3s,box-shadow .3s}
+.tabs2 button[aria-pressed="true"]{background:#fff; box-shadow:0 3px 8px rgba(0,0,0,.12)}
+.form{padding:16px; display:flex; flex-direction:column; gap:14px}
+.field{display:flex; flex-direction:column; gap:6px}
+.field label{font-size:13px; font-weight:600}
+.field label .req{color:var(--a-red)}
+.inp{display:flex; align-items:center; gap:8px; border-radius:14px; padding:0 14px; background:rgba(255,255,255,.7); border:1px solid rgba(14,27,44,.08); height:48px; transition:border-color .2s,box-shadow .2s}
+.inp:focus-within{border-color:var(--a-teal); box-shadow:0 0 0 4px rgba(31,122,110,.12)}
+.inp input{border:0; outline:0; flex:1; min-width:0; background:transparent; font-size:15px; font-variant-numeric:tabular-nums; height:100%}
+.inp .u{font-size:12px; color:var(--a-muted)}
+.field small{font-size:11.5px; color:var(--a-muted)}
+.opts{display:flex; gap:6px; flex-wrap:wrap}
+.opt{border:1px solid rgba(14,27,44,.08); background:rgba(255,255,255,.6); padding:8px 13px; border-radius:12px; font-size:12.5px; font-weight:500; transition:all .25s var(--spring)}
+.opt[aria-pressed="true"]{border-color:var(--a-teal); background:rgba(31,122,110,.1); color:#155E55; font-weight:600}
+.result{display:flex; flex-direction:column; gap:10px}
+.rcard{padding:14px 16px; display:flex; flex-direction:column; gap:8px; border-radius:20px; animation:rise .4s var(--ease) both}
+.rcard.bad{background:rgba(210,69,47,.09); border:1px solid rgba(210,69,47,.12)}
+.rcard.good{background:rgba(19,134,90,.1); border:1px solid rgba(19,134,90,.14); animation-delay:.08s}
+.rcard .t{display:flex; align-items:center; gap:8px; font-weight:700; font-size:13.5px}
+.rcard .r{display:flex; justify-content:space-between; font-size:12.5px; gap:10px}
+.rcard .r b{font-variant-numeric:tabular-nums}
+.rcard .bigv{font-size:22px}
+.prog{display:flex; gap:5px; padding:0 16px}
+.prog i{flex:1; height:4px; border-radius:2px; background:rgba(118,118,128,.2); overflow:hidden; position:relative}
+.prog i.on::after{content:""; position:absolute; inset:0; background:var(--a-teal); animation:grow2 .6s var(--ease) both}
+.app.car .prog i.on::after{background:var(--a-sand)}
+.wz-h{padding:12px 16px 0; display:flex; flex-direction:column; gap:4px}
+.wz-h small{color:var(--a-muted); font-size:12px}
+.wz-h h3{font-family:var(--f-display); font-size:22px; margin:0}
+.owner{display:flex; gap:10px; padding:12px 14px; background:rgba(255,190,80,.16); border:1px solid rgba(255,190,80,.25); border-radius:16px; font-size:12px; line-height:1.7; color:#6B4A14}
+.check{display:flex; gap:10px; align-items:flex-start; font-size:12.5px; line-height:1.7; padding:12px; border-radius:14px; background:rgba(31,122,110,.08)}
+.check .box{width:22px; height:22px; border-radius:7px; background:var(--a-teal); color:#fff; display:grid; place-items:center; flex:none; margin-top:1px}
+.ups{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.up{border:1.5px dashed rgba(14,27,44,.18); border-radius:18px; padding:14px 10px; display:flex; flex-direction:column; align-items:center; gap:6px; text-align:center; font-size:12px; background:rgba(255,255,255,.5)}
+.up.done{border-style:solid; border-color:rgba(19,134,90,.3); background:var(--a-green-s)}
+.up .ic{width:38px; height:38px; border-radius:12px; background:rgba(255,255,255,.8); display:grid; place-items:center; color:var(--a-teal)}
+.up.done .ic{color:var(--a-green)}
+.up b{font-size:12.5px} .up small{color:var(--a-muted); font-size:11px}
+.choice{display:flex; flex-direction:column; gap:10px}
+.ch{display:flex; gap:12px; align-items:flex-start; padding:14px; border:1.5px solid rgba(255,255,255,.75); border-radius:20px; background:var(--g-fill); text-align:start; transition:all .3s var(--spring)}
+.ch[aria-pressed="true"]{border-color:var(--a-teal); background:rgba(31,122,110,.08)}
+.ch .ic{width:40px; height:40px; border-radius:13px; background:rgba(255,255,255,.8); display:grid; place-items:center; flex:none}
+.ch b{display:block; font-size:14px; margin-bottom:2px}
+.ch span{font-size:12px; color:var(--a-muted); line-height:1.65}
+.wz-foot{display:grid; grid-template-columns:auto 1fr; gap:10px; padding:12px 16px var(--hb); background:rgba(242,246,247,.72); -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur); border-top:.5px solid rgba(14,27,44,.1)}
+.success{display:flex; flex-direction:column; align-items:center; text-align:center; gap:10px; padding:20px 20px 8px}
+.success .badge{width:86px; height:86px; border-radius:50%; background:var(--a-green-s); color:var(--a-green); display:grid; place-items:center; animation:popIn .6s var(--spring) both; position:relative}
+.success .badge::after{content:""; position:absolute; inset:0; border-radius:50%; border:2px solid var(--a-green); animation:ping 1.8s .4s ease-out infinite}
+.success .badge svg{width:40px; height:40px}
+.success .badge path{stroke-dasharray:40; animation:draw .6s .3s var(--ease) both}
+.prof{position:relative; overflow:hidden; background:linear-gradient(160deg,#17345A,var(--a-navy)); color:#fff; padding:calc(var(--sb) + 8px) 18px 22px; display:flex; flex-direction:column; gap:14px}
+.prof::before{content:""; position:absolute; width:260px; height:260px; border-radius:50%; left:-80px; top:-100px; background:radial-gradient(closest-side,rgba(79,221,191,.3),transparent); animation:drift1 9s ease-in-out infinite alternate}
+.prof > *{position:relative}
+.prof .who{display:flex; gap:12px; align-items:center}
+.av{width:50px; height:50px; border-radius:17px; background:linear-gradient(160deg,var(--a-teal2),var(--a-teal)); display:grid; place-items:center; font-family:var(--f-display); font-weight:700; font-size:19px; color:#fff}
+.prof .kpis{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
+.prof .kpis button{position:relative; text-align:start; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.12); border-radius:14px; padding:10px; font-size:11px; color:rgba(255,255,255,.7); transition:transform .25s var(--spring),background .25s}
+.prof .kpis button:active{transform:scale(.95); background:rgba(255,255,255,.14)}
+.prof .kpis button svg.i{position:absolute; top:10px; left:8px; opacity:.55}
+.prof .kpis b{display:block; font-family:var(--f-display); font-size:19px; color:#fff}
+.tl{display:flex; flex-direction:column; padding:6px 16px 14px}
+.tli{display:grid; grid-template-columns:28px 1fr; gap:12px; position:relative; padding:10px 0}
+.tli:not(:last-child)::after{content:""; position:absolute; right:13px; top:38px; bottom:-8px; width:2px; background:rgba(118,118,128,.2)}
+.tli.done:not(:last-child)::after{background:var(--a-teal)}
+.tli .d{width:28px; height:28px; border-radius:50%; display:grid; place-items:center; background:#fff; color:var(--a-muted); border:2px solid rgba(118,118,128,.25); font-size:12px; font-weight:700}
+.tli.done .d{background:var(--a-teal); border-color:var(--a-teal); color:#fff}
+.tli.cur .d{border-color:var(--a-teal); color:var(--a-teal); animation:glow 1.8s ease-in-out infinite}
+@keyframes glow{50%{box-shadow:0 0 0 7px rgba(31,122,110,.15)}}
+.tli b{font-size:13.5px}
+.tli p{margin:2px 0 0; font-size:12px; color:var(--a-muted); line-height:1.65}
+.tli .pill{margin-top:6px}
+.mgr{display:flex; align-items:center; gap:12px; padding:14px 16px}
+.mgr .av{width:44px; height:44px; font-size:16px; background:linear-gradient(160deg,#D4B077,var(--a-sand))}
+.notif{display:flex; gap:12px; padding:13px 16px; border-top:1px solid var(--g-sep); align-items:flex-start}
+.notif:first-child{border-top:0}
+.notif .ic{width:36px; height:36px; border-radius:12px; display:grid; place-items:center; flex:none; background:rgba(31,122,110,.1); color:var(--a-teal)}
+.notif b{font-size:13px; display:block} .notif span{font-size:12px; color:var(--a-muted); line-height:1.6}
+.notif time{font-size:11px; color:var(--a-muted); margin-inline-start:auto; white-space:nowrap}
+.setrow{display:flex; align-items:center; gap:12px; padding:13px 16px; border-top:1px solid var(--g-sep); font-size:13.5px}
+.setrow:first-child{border-top:0}
+.setrow .v{margin-inline-start:auto; color:var(--a-muted); font-size:12.5px}
+.sw{width:51px; height:31px; border-radius:16px; background:#34C759; position:relative; margin-inline-start:auto; border:0; transition:background .25s; flex:none}
+.app .sw{background:var(--a-teal)}
+.sw::after{content:""; position:absolute; top:2px; left:2px; width:27px; height:27px; border-radius:50%; background:#fff; box-shadow:0 3px 8px rgba(0,0,0,.15); transition:left .35s var(--spring)}
+.sw[aria-pressed="false"]{background:rgba(118,118,128,.22)}
+.sw[aria-pressed="false"]::after{left:22px}
+.scrim{position:absolute; inset:0; background:rgba(11,22,38,.35); z-index:45; display:flex; align-items:flex-end; animation:fadeIn .25s ease both}
+.sheet{width:100%; border-radius:30px 30px 0 0; padding:10px 16px 34px; display:flex; flex-direction:column; gap:14px; max-height:84%; overflow-y:auto; animation:sheetUp .5s var(--spring) both;
+  background:rgba(246,249,250,.88); -webkit-backdrop-filter:var(--g-blur); backdrop-filter:var(--g-blur)}
+@keyframes sheetUp{from{transform:translateY(100%)}to{transform:none}}
+.grab{width:38px; height:5px; border-radius:3px; background:rgba(118,118,128,.35); align-self:center}
+.sheet h4{font-family:var(--f-display); margin:0; font-size:17px}
+.sheet .grp{display:flex; flex-direction:column; gap:8px}
+.sheet .grp > span{font-size:12.5px; font-weight:600}
+
+/* ---------- account sub-pages ---------- */
+.dealhead{overflow:hidden; padding:0}
+.dealhead .thumb{aspect-ratio:16/8}
+.dealhead .dh{padding:14px 16px; display:flex; flex-direction:column; gap:10px}
+.dealhead .amt{display:flex; justify-content:space-between; align-items:flex-end; gap:10px}
+.dealhead .amt small{display:block; font-size:11.5px; color:var(--a-muted)}
+.dealhead .amt .num{font-size:22px}
+.nextup{display:flex; gap:12px; align-items:center; padding:14px 16px}
+.nextup .cal{width:52px; height:56px; border-radius:14px; flex:none; display:flex; flex-direction:column; align-items:center; justify-content:center; background:linear-gradient(160deg,var(--a-teal2),var(--a-teal)); color:#fff; line-height:1.1}
+.app.car .nextup .cal{background:linear-gradient(160deg,#CDA86E,var(--a-sand))}
+.nextup .cal small{font-size:10px; opacity:.85} .nextup .cal b{font-family:var(--f-display); font-size:20px}
+.nextup b{font-size:14px} .nextup p{margin:2px 0 0; font-size:12px; color:var(--a-muted)}
+.docrow{display:flex; align-items:center; gap:10px; padding:12px 16px; border-top:1px solid var(--g-sep); font-size:13px}
+.docrow:first-child{border-top:0}
+.docrow span:last-child{margin-inline-start:auto}
+.lsum{display:grid; grid-template-columns:repeat(3,1fr); gap:8px}
+.lsum div{padding:12px; display:flex; flex-direction:column; gap:2px; font-size:11.5px; color:var(--a-muted)}
+.lsum b{font-family:var(--f-display); font-size:20px; color:var(--a-ink)}
+.lead{padding:14px 16px; display:flex; flex-direction:column; gap:12px; animation:rise .45s var(--ease) both}
+.lead:nth-of-type(2){animation-delay:.06s} .lead:nth-of-type(3){animation-delay:.12s}
+.lead .who{display:flex; gap:12px; align-items:center}
+.lead .av{width:44px; height:44px; font-size:16px; border-radius:14px}
+.lead .who b{font-size:14px; display:block}
+.lead .who span{font-size:12px; color:var(--a-muted)}
+.lead .tags{display:flex; gap:6px; flex-wrap:wrap}
+.lead .acts{display:grid; grid-template-columns:1fr 1fr; gap:8px}
+.lead .acts .btn{padding:10px 12px; font-size:13px}
+.empty{text-align:center; padding:40px 16px; color:var(--a-muted); display:flex; flex-direction:column; align-items:center; gap:10px}
+.empty .ei{width:64px; height:64px; border-radius:20px; display:grid; place-items:center; background:var(--g-fill); border:1px solid var(--g-stroke)}
+
+/* ---------- light splash + onboarding (default theme) ---------- */
+.app:not(.dark) .splash{background:radial-gradient(120% 80% at 50% 30%,#FFFFFF 0%,#EEF4F5 55%,#DDE8EA 100%); color:var(--a-ink)}
+.app:not(.dark) .splash .aur i{opacity:.5}
+.app:not(.dark) .splash .aur i:nth-child(1){background:#A6EAD9} .app:not(.dark) .splash .aur i:nth-child(2){background:#F2DDB0}
+.app:not(.dark) .splash .grid{background-image:linear-gradient(rgba(14,27,44,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(14,27,44,.05) 1px,transparent 1px)}
+.app:not(.dark) .splash .sbar,.app:not(.dark) .onb .sbar{color:var(--a-ink)}
+.app:not(.dark) .sp-name .en{color:#A8823F}
+.app:not(.dark) .sp-tag{color:var(--a-muted)}
+.app:not(.dark) .sp-chips span{background:rgba(255,255,255,.7); border-color:rgba(14,27,44,.08); color:var(--a-ink)}
+.app:not(.dark) .sp-load{background:rgba(14,27,44,.08)}
+.app:not(.dark) .sp-foot{color:rgba(14,27,44,.4)}
+.app:not(.dark) .emblem::after{background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.55) 50%,transparent 65%); background-size:250% 100%; mix-blend-mode:normal}
+.app:not(.dark) .emblem .car path:first-child{stroke-opacity:.9}
+.app:not(.dark) .onb{background:radial-gradient(120% 70% at 50% 0%,#FFFFFF 0%,#EEF4F5 55%,#DFE9EB 100%); color:var(--a-ink)}
+.app:not(.dark) .onb .aur i{opacity:.5}
+.app:not(.dark) .onb .aur i:nth-child(1){background:#A6EAD9} .app:not(.dark) .onb .aur i:nth-child(2){background:#C6D7F3}
+.app:not(.dark) .onb[data-s="1"] .aur i:nth-child(1){background:#B5D3F2}
+.app:not(.dark) .onb[data-s="2"] .aur i:nth-child(1){background:#A9E6C9}
+.app:not(.dark) .onb[data-s="3"] .aur i:nth-child(1){background:#F2DDB0}
+.app:not(.dark) .onb .wm.light{color:var(--a-ink)}
+.app:not(.dark) .skip{background:rgba(255,255,255,.7); border:1px solid rgba(14,27,44,.08); color:var(--a-ink)}
+.app:not(.dark) .onb-copy .eb{color:var(--a-teal)}
+.app:not(.dark) .onb-copy h2 em{color:var(--a-teal)}
+.app:not(.dark).car .onb-copy .eb,.app:not(.dark).car .onb-copy h2 em{color:#9C7A3E}
+.app:not(.dark) .onb-copy p{color:var(--a-muted)}
+.app:not(.dark) .dots i{background:rgba(14,27,44,.15)}
+.app:not(.dark) .dots i.on{background:var(--a-teal)}
+.app:not(.dark) .nextb{background:var(--a-navy); border-color:var(--a-navy); box-shadow:0 18px 30px -14px rgba(11,22,38,.55)}
+.app:not(.dark) .gcard{background:rgba(255,255,255,.7); border-color:rgba(255,255,255,.9); box-shadow:0 30px 50px -26px rgba(11,22,38,.35),0 1px 0 #fff inset; color:var(--a-ink)}
+.app:not(.dark) .ill1 .lbl,.app:not(.dark) .ill1 .row,.app:not(.dark) .ill2 .col,.app:not(.dark) .ill3 .doc span:last-child{color:var(--a-muted)}
+.app:not(.dark) .ill1 .big{color:var(--a-ink)}
+.app:not(.dark) .ill1 .bar{background:rgba(14,27,44,.08)}
+.app:not(.dark) .ill1 .bar i{background:linear-gradient(90deg,var(--a-teal2),var(--a-mint))}
+.app:not(.dark) .zero{box-shadow:0 10px 20px -10px rgba(11,22,38,.3)}
+.app:not(.dark) .ill2 .colb.m{background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.55)); border-color:rgba(14,27,44,.08); box-shadow:0 20px 30px -20px rgba(11,22,38,.3)}
+.app:not(.dark) .ill2 .colb.c{background:linear-gradient(180deg,var(--a-mint),var(--a-teal))}
+.app:not(.dark) .ill2 .colb b{color:var(--a-ink)}
+.app:not(.dark) .gainb{box-shadow:0 18px 30px -14px rgba(11,22,38,.3)}
+.app:not(.dark) .ill3 .doc .ck{border-color:var(--a-mint)}
+.app:not(.dark) .ill3 .seal{background:rgba(31,122,110,.08); border-color:rgba(31,122,110,.4); color:var(--a-teal)}
+.app:not(.dark) .vp,.app:not(.dark) .rp{background:rgba(255,255,255,.65); border-color:rgba(14,27,44,.08); color:var(--a-ink)}
+.app:not(.dark) .vp[aria-pressed="true"],.app:not(.dark) .rp[aria-pressed="true"]{border-color:var(--a-teal); background:rgba(31,122,110,.08)}
+.app:not(.dark) .vp .ico{background:rgba(31,122,110,.1); color:var(--a-teal)}
+.app:not(.dark) .vp .ico[style]{color:#9C7A3E!important; background:rgba(184,146,90,.14)}
+.app:not(.dark) .rp > span:not(.rad),.app:not(.dark) .rp b{color:var(--a-ink)}
+.app:not(.dark) .vp span,.app:not(.dark) .rp span span{color:var(--a-muted)}
+.app:not(.dark) .rp .rad{border-color:rgba(14,27,44,.25)}
+.app:not(.dark) .rp[aria-pressed="true"] .rad{border-color:var(--a-teal)}
+
+/* ---------- dark mode (app) ---------- */
+.app{--seg1:var(--a-navy)}
+.featc{color:#8A5A12}
+::view-transition-old(root){animation:none}
+::view-transition-new(root){animation:themeReveal .7s cubic-bezier(.65,0,.35,1)}
+@keyframes themeReveal{from{clip-path:circle(0 at var(--vx,50%) var(--vy,50%))}to{clip-path:circle(150% at var(--vx,50%) var(--vy,50%))}}
+.app.dark{color-scheme:dark; --a-ink:#E8EEF3; --a-muted:#8F9CAA; --a-bg:#081019; --a-teal:#24A08A; --a-teal2:#3BC0A7;
+  --a-green:#43D196; --a-green-s:rgba(67,209,150,.13); --a-red:#FF7D66; --a-red-s:rgba(255,125,102,.13);
+  --g-fill:rgba(24,35,50,.55); --g-strong:rgba(26,38,54,.86); --g-stroke:rgba(255,255,255,.08); --g-sep:rgba(255,255,255,.07);
+  --g-shadow:0 12px 30px -16px rgba(0,0,0,.7),0 1px 0 rgba(255,255,255,.05) inset; --seg1:#7391B0}
+.app.dark .amb i{opacity:.55}
+.app.dark .amb i:nth-child(1){background:#0F5A50} .app.dark .amb i:nth-child(2){background:#1B3466} .app.dark .amb i:nth-child(3){background:#4E3B18}
+.app.dark.car .amb i:nth-child(1){background:#5A4318} .app.dark.car .amb i:nth-child(3){background:#0F5048}
+.app.dark .gtop{background:rgba(8,16,25,.62); border-bottom-color:rgba(255,255,255,.07)}
+.app.dark .ctabar,.app.dark .wz-foot{background:rgba(8,16,25,.72); border-top-color:rgba(255,255,255,.07)}
+.app.dark .seg,.app.dark .tabs2,.app.dark .sx-in,.app.dark .lsearch .sfield,.app.dark .cmp .tr,.app.dark .bar .track,.app.dark .rate .new,.app.dark .pill.neu,.app.dark .prog i,.app.dark .flow .line{background:rgba(118,118,128,.24)}
+.app.dark .seg .thumb-s,.app.dark .tabs2 button[aria-pressed="true"]{background:#2B3848; box-shadow:0 3px 10px rgba(0,0,0,.45)}
+.app.dark .tabbar{background:rgba(20,30,44,.7)}
+.app.dark .tabbar button{color:#7E8B99}
+.app.dark .tabbar .pillbg{background:rgba(59,192,167,.14)}
+.app .tabbar .mid,.app.dark .tabbar .mid{color:#fff}
+.app.dark .featc,.app.dark .pill.feat{color:#F2C978}
+.app.dark .pill.glass{background:rgba(10,17,26,.62); color:#E8EEF3}
+.app.dark .fav{background:rgba(10,17,26,.6); color:#E8EEF3}
+.app.dark .fav[aria-pressed="true"]{color:var(--a-red)}
+.app.dark .sfield{background:rgba(22,33,47,.86); box-shadow:0 18px 40px -18px rgba(0,0,0,.8),0 1px 0 rgba(255,255,255,.06) inset}
+.app.dark .sfield .fil{background:var(--a-teal)}
+.app.dark .dpill,.app.dark .delta,.app.dark .appcta{background:linear-gradient(150deg,#173556,#0D1D31); box-shadow:0 0 0 1px rgba(255,255,255,.07) inset}
+.app.dark .flow .st .k,.app.dark .tli .d{background:#182434; border-color:rgba(255,255,255,.14)}
+.app.dark .tli.done .d{background:var(--a-teal); border-color:var(--a-teal)}
+.app.dark .tli:not(:last-child)::after{background:rgba(255,255,255,.1)}
+.app.dark .tli.done:not(:last-child)::after{background:var(--a-teal)}
+.app.dark .notif-toast{background:rgba(22,33,47,.9)}
+.app.dark .sx{background:rgba(6,11,18,.78)}
+.app.dark .chip[aria-pressed="true"]{background:#E8EEF3; border-color:#E8EEF3; color:#0B1626}
+.app.dark .btn.dark{background:#E8EEF3; color:#0B1626}
+.app.dark .price{background:rgba(255,255,255,.035); border-color:rgba(255,255,255,.06)}
+.app.dark .dsheet{background:rgba(8,16,25,.9)}
+.app.dark .sheet{background:rgba(16,25,37,.94)}
+.app.dark .ring div{background:#111C2A}
+.app.dark .inp{background:rgba(255,255,255,.045); border-color:rgba(255,255,255,.1)}
+.app.dark .opt{background:rgba(255,255,255,.045); border-color:rgba(255,255,255,.1)}
+.app.dark .opt[aria-pressed="true"]{color:#73E3C9; background:rgba(59,192,167,.14); border-color:#3BC0A7}
+.app.dark .owner{color:#F0D29A; background:rgba(242,190,90,.1); border-color:rgba(242,190,90,.2)}
+.app.dark .up{border-color:rgba(255,255,255,.16); background:rgba(255,255,255,.03)}
+.app.dark .up .ic,.app.dark .ch .ic{background:rgba(255,255,255,.07)}
+.app.dark .ch{border-color:rgba(255,255,255,.08)}
+.app.dark .sw[aria-pressed="false"]{background:rgba(118,118,128,.36)}
+.app.dark .rng{background:linear-gradient(to left,var(--a-teal) var(--p,40%),rgba(118,118,128,.3) var(--p,40%))}
+.app.dark.car .rng{background:linear-gradient(to left,var(--a-sand) var(--p,40%),rgba(118,118,128,.3) var(--p,40%))}
+.app.dark.car .link,.app.dark.car .tabbar button[aria-current="true"],.app.dark.car .cat .ci,.app.dark.car .trust .ti,.app.dark .qa:nth-child(3) .t{color:#E6C48C}
+.app.dark .qa:nth-child(2) .t{color:#7FA6E6} .app.dark .qa:nth-child(4) .t{color:#FF8E78}
+.app.dark .cat .ci,.app.dark .trust .ti,.app.dark .notif .ic{background:rgba(59,192,167,.13)}
+.app.dark .thumb svg.art{filter:brightness(.86) saturate(.92)}
+.app.dark .table .r.hl{background:rgba(59,192,167,.08)}
+.app.dark .check{background:rgba(59,192,167,.1)}
+.app.dark .stat svg.spark path.a{opacity:.3}
+
+@media (prefers-reduced-motion:reduce){
+  .app *,.app *::before,.app *::after{animation:none!important; transition:none!important}
+}
+</style>
+
+<div class="stage"><div class="phone"><div class="app" id="app"><div class="amb" aria-hidden="true"><i></i><i></i><i></i></div><div id="host"></div></div></div></div>
+
+<script>
+(function(){
+/* ================= icons ================= */
+const P={
+ home:'M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z',
+ grid:'M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z',
+ calc:'M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zM8 6h8M8 11h.01M12 11h.01M16 11h.01M8 15h.01M12 15h.01M16 15h.01M8 18.5h.01M12 18.5h4',
+ user:'M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10z',
+ search:'M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16zM21 21l-4.3-4.3',
+ sliders:'M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1M15 4v4M9 10v4M17 16v4',
+ shield:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10zM9 12l2 2 4-4',
+ check:'M20 6 9 17l-5-5',
+ camera:'M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1zM12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+ bell:'M6 8a6 6 0 1 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a2 2 0 0 0 3.4 0',
+ heart:'M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7z',
+ car:'M5 17h14M3 17v-4l2.2-5A2 2 0 0 1 7 7h10a2 2 0 0 1 1.8 1L21 13v4M3 17v1.5a.5.5 0 0 0 .5.5H6M21 17v1.5a.5.5 0 0 1-.5.5H18M7.5 15a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM16.5 15a1 1 0 1 0 0-2 1 1 0 0 0 0 2zM3.5 12h17',
+ bldg:'M3 21h18M5 21V7l7-4 7 4v14M9 9h1M14 9h1M9 13h1M14 13h1M10 21v-4h4v4',
+ store:'M3 9l1.5-5h15L21 9M4 9v11h16V9M3 9h18M9 20v-6h6v6',
+ villa:'M2 11l10-7 10 7M5 9.5V20h14V9.5M10 20v-5h4v5',
+ crown:'M3 8l4.5 4L12 5l4.5 7L21 8l-2 11H5z',
+ leaf:'M5 19c8 0 14-6 14-14C11 5 5 11 5 19zM5 19l7-7',
+ back:'M9 18l6-6-6-6',
+ fwd:'M15 18l-6-6 6-6',
+ chat:'M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-6.4A8 8 0 1 1 21 12z',
+ file:'M14 3H6a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V8zM14 3v5h5M9 13h6M9 17h6',
+ x:'M18 6 6 18M6 6l12 12',
+ star:'M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z',
+ flame:'M12 22a7 7 0 0 0 7-7c0-4-3-6-4-9-1 2-2 3-3 3 0-2-1-4-3-6 0 4-4 6-4 12a7 7 0 0 0 7 7z',
+ gauge:'M12 14l4-4M3.3 19a10 10 0 1 1 17.4 0',
+ menu:'M4 7h16M4 12h10M4 17h16',
+ eyeoff:'M3 3l18 18M10.6 6.1A10 10 0 0 1 12 6c5 0 9 6 9 6a17 17 0 0 1-2.5 3.1M6.6 6.6C4.3 8.1 3 12 3 12s4 6 9 6a9 9 0 0 0 4.4-1.1',
+ megaphone:'M3 11v2a1 1 0 0 0 1 1h3l6 4V6L7 10H4a1 1 0 0 0-1 1zM17 9a4 4 0 0 1 0 6',
+ scan:'M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M7 12h10',
+ face:'M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2M9 9v1M15 9v1M9 15c1.5 1.3 4.5 1.3 6 0',
+ wallet:'M3 7a2 2 0 0 1 2-2h13v4M3 7v11a2 2 0 0 0 2 2h15V9H5a2 2 0 0 1-2-2zM16 14.5h.01',
+ tag:'M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9zM7.5 7.5h.01',
+ cal:'M4 5h16v16H4zM4 10h16M8 3v4M16 3v4',
+ globe:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18',
+ info:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 11v5M12 8h.01',
+ pin:'M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21zM12 12a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z',
+ clock:'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',
+ trend:'M3 17l6-6 4 4 8-8M15 7h6v6',
+ plus:'M12 5v14M5 12h14',
+ sparkle:'M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z',
+ share:'M12 3v12M7 8l5-5 5 5M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6',
+ bolt:'M13 2 4 14h7l-1 8 9-12h-7z',
+ lock:'M5 11h14v10H5zM8 11V7a4 4 0 0 1 8 0v4',
+ sun:'M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4',
+ moon:'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z',
+ hist:'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2'
+};
+const ic=(n,c='')=>`<svg class="i ${c}" viewBox="0 0 24 24" aria-hidden="true"><path d="${P[n]}"/></svg>`;
+const LOGO=`<svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8FF4DD"/><stop offset="1" stop-color="#1F9C87"/></linearGradient></defs><path d="M58 22 H70 A8 8 0 0 1 78 30 V70 A8 8 0 0 1 70 78 H58 M64 50 H22 M37 35 L22 50 L37 65" fill="none" stroke="url(#lg)" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const EMBLEM=`<svg viewBox="0 0 260 180" aria-hidden="true"><defs>
+<linearGradient id="emG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F7E4B4"/><stop offset=".5" stop-color="#D4AF6A"/><stop offset="1" stop-color="#9C7A3E"/></linearGradient>
+<linearGradient id="emT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2B5079"/><stop offset="1" stop-color="#0E1F35"/></linearGradient>
+<linearGradient id="emC" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".5" stop-color="#D3DBE3"/><stop offset="1" stop-color="#7C8A98"/></linearGradient>
+<radialGradient id="emGl" cx=".5" cy=".82" r=".62"><stop offset="0" stop-color="#4FDDBF" stop-opacity=".32"/><stop offset="1" stop-color="#4FDDBF" stop-opacity="0"/></radialGradient>
+<linearGradient id="emF" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#D4AF6A" stop-opacity="0"/><stop offset=".5" stop-color="#D4AF6A"/><stop offset="1" stop-color="#D4AF6A" stop-opacity="0"/></linearGradient></defs>
+<ellipse cx="130" cy="146" rx="128" ry="42" fill="url(#emGl)"/>
+<g class="tw" fill="url(#emT)" stroke="url(#emG)" stroke-width="1.6" stroke-linejoin="round">
+<path d="M58 140 V64 H96 V140"/><path d="M104 140 V32 L130 12 L156 32 V140"/><path d="M164 140 V50 L202 66 V140"/><path d="M130 12 V0" fill="none"/></g>
+<g class="win" stroke="#D4AF6A" stroke-opacity=".38" stroke-width=".9"><path d="M112 44 H148"/><path d="M112 54 H148"/><path d="M112 64 H148"/><path d="M112 74 H148"/><path d="M112 84 H148"/><path d="M112 94 H148"/><path d="M112 104 H148"/><path d="M112 114 H148"/><path d="M64 74 H90"/><path d="M64 84 H90"/><path d="M64 94 H90"/><path d="M64 104 H90"/><path d="M64 114 H90"/><path d="M170 76 H196"/><path d="M170 86 H196"/><path d="M170 96 H196"/><path d="M170 106 H196"/><path d="M170 116 H196"/></g>
+<path class="beam" d="M222 141 L262 132 L262 152Z" fill="#F7E4B4"/>
+<g class="car"><path d="M36 152 Q36 142 48 140 L80 135 Q96 121 116 117 L150 117 Q167 118 182 130 L208 135 Q224 138 224 148 V154 Q224 158 220 158 H205 A13 13 0 0 0 179 158 H86 A13 13 0 0 0 60 158 H40 Q36 158 36 154Z" fill="url(#emC)" stroke="#9C7A3E" stroke-opacity=".6" stroke-width="1"/>
+<path d="M100 133 Q108 123 120 121 L134 121 V133Z M140 121 L150 121 Q163 122 173 133 L140 133Z" fill="#14263C"/>
+<path d="M50 142 H216" stroke="url(#emG)" stroke-width="1.2"/><path d="M214 140 h8" stroke="#FFF6DC" stroke-width="2.6" stroke-linecap="round"/>
+<circle cx="73" cy="158" r="11" fill="#0B1220" stroke="url(#emG)" stroke-width="1.4"/><circle cx="73" cy="158" r="4.5" fill="#3A4757"/>
+<circle cx="192" cy="158" r="11" fill="#0B1220" stroke="url(#emG)" stroke-width="1.4"/><circle cx="192" cy="158" r="4.5" fill="#3A4757"/></g>
+<path d="M14 172 H246" stroke="url(#emF)" stroke-width="1"/></svg>`;
+const MARK=`<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M58 22 H70 A8 8 0 0 1 78 30 V70 A8 8 0 0 1 70 78 H58 M64 50 H22 M37 35 L22 50 L37 65" fill="none" stroke="currentColor" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+
+/* ================= data (from v1) ================= */
+const RE=[
+ {id:'r1',type:'فيلا دوبلكس',cat:'فلل',proj:'ضاحية الياسمين',dev:'دار المسار للتطوير',area:'الرياض · حي الياسمين',code:'S-20417',specs:'4 غرف · 5 دورات مياه · 360 م²',cash:600000,remain:1800000,inst:75000,freq:'ربع سنوي',deliv:'2027',market:2850000,feat:true,hot:true,hue:168,city:'الرياض'},
+ {id:'r2',type:'شقة 3 غرف',cat:'شقق',proj:'أبراج الواجهة',dev:'سواحل العقارية',area:'جدة · حي الشاطئ',code:'S-19882',specs:'3 غرف · 3 دورات مياه · 165 م²',cash:290000,remain:1060000,inst:44200,freq:'ربع سنوي',deliv:'2028',market:1560000,neg:true,hue:200,city:'جدة'},
+ {id:'r3',type:'تاون هاوس',cat:'تاون هاوس',proj:'واحة العليا',dev:'الأفق للتطوير',area:'الخبر · حي العليا',code:'S-21065',specs:'4 غرف · 4 دورات مياه · 280 م²',cash:410000,remain:1370000,inst:57000,freq:'ربع سنوي',deliv:'2027',market:2050000,hue:34,city:'الخبر'},
+ {id:'r4',type:'محل تجاري',cat:'محلات',proj:'بوليفارد الملقا',dev:'نخبة الشمال',area:'الرياض · حي الملقا',code:'S-18450',specs:'واجهة 9 م · 85 م²',cash:520000,remain:1430000,inst:119000,freq:'نصف سنوي',deliv:'جاهز للنقل',market:2400000,ready:true,hue:260,city:'الرياض'}
+];
+const CARS=[
+ {id:'c1',make:'تويوتا',model:'لاندكروزر GXR',year:2024,city:'الرياض',km:38000,gear:'أوتوماتيك',color:'أبيض لؤلؤي',paint:'#EEF1F3',fin:'تأجير منتهي بالتمليك',cash:98000,remain:239400,monthly:5700,left:42,total:60,oldRate:3.2,newRate:5.4,market:355000,score:94,warranty:'حتى 2027 أو 100,000 كم',feat:true,hot:true,code:'C-30112',sky:'#DCE6EC'},
+ {id:'c2',make:'لكزس',model:'ES 350',year:2024,city:'الدمام',km:21000,gear:'أوتوماتيك',color:'رمادي معدني',paint:'#8F98A1',fin:'تأجير منتهي بالتمليك',cash:72000,remain:148800,monthly:3100,left:48,total:60,oldRate:3.4,newRate:5.5,market:232000,score:97,warranty:'حتى 2028',feat:true,code:'C-30458',sky:'#E9E2D6'},
+ {id:'c3',make:'نيسان',model:'باترول LE',year:2023,city:'جدة',km:56000,gear:'أوتوماتيك',color:'أسود',paint:'#2A2F36',fin:'مرابحة',cash:110000,remain:186000,monthly:4650,left:40,total:60,oldRate:3.6,newRate:5.4,market:318000,score:91,warranty:'منتهي',neg:true,code:'C-29907',sky:'#D7E3E2'},
+ {id:'c4',make:'هيونداي',model:'توسان',year:2023,city:'الرياض',km:52000,gear:'أوتوماتيك',color:'أزرق',paint:'#2E5D8C',fin:'مرابحة',cash:34000,remain:61200,monthly:1700,left:36,total:60,oldRate:3.6,newRate:5.5,market:99000,score:89,warranty:'حتى 2026',code:'C-31220',sky:'#E4E7EE'}
+];
+const COMM=.0125;
+const reGain=l=>{const c=l.cash+l.remain;return l.market-c-Math.round(c*COMM)};
+const carCalc=l=>{const c=l.cash+l.remain;const price=l.market-c;const rate=Math.round(l.remain*(l.newRate-l.oldRate)/100*(l.left/12));const fee=Math.round(c*COMM);return {price,rate,fee,gain:price+rate-fee,equity:l.market-l.remain}};
+const gainOf=l=>l.make?carCalc(l).gain:reGain(l);
+const nameOf=l=>l.make?`${l.make} ${l.model} ${l.year}`:l.proj;
+
+/* ================= state ================= */
+const S={screen:'splash',prev:null,v:'re',id:'r1',sort:0,sheet:false,search:false,q:'',favs:new Set(['r2','c2']),calcTab:'owner',sellStep:1,buyStep:1,acct:'deals',
+  silent:true,faceid:true,theme:'light',role:'sell',onb:0,slide:0,flowI:0,
+  cre:{price:2400000,paid:600000,years:3,pct:10}, ccar:{total:412000,paid:172600,remain:239400,market:355000},
+  buy:{cash:400000,inst:60000,freq:'ربع سنوي'}, mini:{re:600000,car:239400}};
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+const sar=(n,cls='')=>`<span class="num ${cls}">${fmt(n)}<span class="cur">ر.س</span></span>`;
+let uid=0, timers=[];
+const every=(fn,ms)=>timers.push(setInterval(fn,ms));
+const later=(fn,ms)=>timers.push(setTimeout(fn,ms));
+const MQ=window.matchMedia?matchMedia('(prefers-color-scheme: dark)'):null;
+function isDark(){if(S.theme!=='auto')return S.theme==='dark';const r=document.documentElement.getAttribute('data-theme');if(r)return r==='dark';return !!(MQ&&MQ.matches)}
+const appCls=()=>'app'+(S.v==='car'?' car':'')+(isDark()?' dark':'');
+const RM=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ================= art ================= */
+function artRe(h,extra=''){const k=++uid;return `<svg class="art" viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<defs><linearGradient id="sk${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="hsl(${h} 45% 80%)"/><stop offset="1" stop-color="hsl(${h} 35% 95%)"/></linearGradient>
+<pattern id="w${k}" width="15" height="17" patternUnits="userSpaceOnUse"><rect x="4" y="4" width="8" height="10" rx="1.5" fill="hsl(${h} 35% 26% / .5)"/></pattern></defs>
+<rect width="320" height="200" fill="url(#sk${k})"/><circle cx="262" cy="50" r="22" fill="#F6DCA6" opacity=".9"/>
+<rect x="52" y="54" width="96" height="146" rx="3" fill="hsl(${h} 18% 94%)"/><rect x="52" y="54" width="96" height="146" fill="url(#w${k})"/>
+<rect x="148" y="92" width="120" height="108" rx="3" fill="hsl(${h} 16% 87%)"/><rect x="148" y="92" width="120" height="108" fill="url(#w${k})"/>
+<rect x="46" y="48" width="108" height="8" rx="2" fill="hsl(${h} 25% 68%)"/><rect x="142" y="86" width="132" height="8" rx="2" fill="hsl(${h} 25% 64%)"/>
+<path d="M16 200V136q9-16 18 0v64M292 200v-56q8-14 16 0v56" fill="hsl(155 32% 38%)"/>
+<rect y="186" width="320" height="14" fill="hsl(${h} 18% 72%)"/>${extra}</svg>`}
+function artCar(c){const k=++uid;return `<svg class="art" viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+<defs><linearGradient id="bg${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${c.sky}"/><stop offset=".64" stop-color="#F6F8F9"/><stop offset=".64" stop-color="#D5DCE0"/><stop offset="1" stop-color="#C3CCD2"/></linearGradient>
+<linearGradient id="bd${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".3" stop-color="${c.paint}"/><stop offset="1" stop-color="${c.paint}"/></linearGradient></defs>
+<rect width="320" height="200" fill="url(#bg${k})"/>
+<ellipse cx="160" cy="160" rx="132" ry="11" fill="#0E1B2C" opacity=".2"/>
+<g transform="translate(46 68) scale(1.14)">
+<path d="M14 66Q14 56 26 54L56 48L78 30Q84 26 92 26L134 26Q142 26 148 31L166 47L184 50Q194 52 194 62L194 70Q194 74 190 74L176 74A16 16 0 0 0 144 74L76 74A16 16 0 0 0 44 74L18 74Q14 74 14 70Z" fill="url(#bd${k})" stroke="#0E1B2C" stroke-opacity=".25" stroke-width="1.2"/>
+<path d="M84 46L96 32L118 32L118 46ZM124 46L124 32L140 32L154 46Z" fill="#26384A" opacity=".85"/>
+<path d="M20 60h12M180 58h10" stroke="#F2D49B" stroke-width="3" stroke-linecap="round"/>
+<circle cx="60" cy="74" r="12" fill="#1C232B"/><circle cx="60" cy="74" r="5" fill="#9AA5AE"/>
+<circle cx="160" cy="74" r="12" fill="#1C232B"/><circle cx="160" cy="74" r="5" fill="#9AA5AE"/></g></svg>`}
+const art=l=>l.make?artCar(l):artRe(l.hue);
+
+/* banner scenes (live) */
+function bannerArt(kind){const k=++uid;
+ const sky=`<defs><linearGradient id="bs${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0B1626"/><stop offset=".6" stop-color="#173A5E"/><stop offset="1" stop-color="#1F5C6E"/></linearGradient>
+ <radialGradient id="gl${k}" cx=".75" cy=".3" r=".5"><stop offset="0" stop-color="#4FDDBF" stop-opacity=".45"/><stop offset="1" stop-color="#4FDDBF" stop-opacity="0"/></radialGradient></defs>
+ <rect width="390" height="356" fill="url(#bs${k})"/><rect width="390" height="356" fill="url(#gl${k})"><animate attributeName="opacity" values=".6;1;.6" dur="6s" repeatCount="indefinite"/></rect>
+ ${Array.from({length:22},(_,i)=>`<circle cx="${(i*67)%390}" cy="${(i*41)%150+20}" r="${i%3?1:1.6}" fill="#fff" opacity=".6"><animate attributeName="opacity" values=".1;.8;.1" dur="${2+i%4}s" begin="${i*.3}s" repeatCount="indefinite"/></circle>`).join('')}`;
+ if(kind==='sky'){let w='';const towers=[[30,150,54],[92,110,46],[146,70,62],[216,124,50],[274,96,58],[340,160,44]];
+  towers.forEach(([x,y,wd],t)=>{w+=`<rect x="${x}" y="${y}" width="${wd}" height="${356-y}" rx="3" fill="#0E2238"/><rect x="${x}" y="${y}" width="${wd}" height="4" fill="#2A5578"/>`;
+   for(let r=y+14;r<330;r+=16)for(let c=x+7;c<x+wd-6;c+=11){const on=((r*7+c*3+t)%5)===0;w+=`<rect x="${c}" y="${r}" width="6" height="8" rx="1" fill="#F6DCA6" opacity="${on?.85:.12}">${on?`<animate attributeName="opacity" values=".85;.15;.85" dur="${3+(r+c)%5}s" begin="${(r+c)%7*.4}s" repeatCount="indefinite"/>`:''}</rect>`}});
+  return `<svg class="bart" viewBox="0 0 390 356" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${sky}<circle cx="300" cy="70" r="26" fill="#F6DCA6" opacity=".9"/><g>${w}</g>
+  <g opacity=".9"><path d="M176 70 V20 M150 24 H236 M176 24 L226 24" stroke="#F2B544" stroke-width="2.5" fill="none"/><path d="M226 24 v18" stroke="#F2B544" stroke-width="1.5"><animate attributeName="d" values="M226 24 v18;M226 24 v30;M226 24 v18" dur="5s" repeatCount="indefinite"/></path></g></svg>`}
+ if(kind==='car'){return `<svg class="bart" viewBox="0 0 390 356" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${sky}
+  <path d="M0 250 Q100 220 195 236 T390 226 V356 H0Z" fill="#0E2238"/><path d="M0 268 Q120 246 230 258 T390 252 V356 H0Z" fill="#132B45"/>
+  <path d="M-40 356 L170 262 H220 L430 356Z" fill="#1A2B3E"/>
+  <path d="M195 268 L195 356" stroke="#EACB93" stroke-width="4" stroke-dasharray="14 18"><animate attributeName="stroke-dashoffset" values="0;-64" dur=".9s" repeatCount="indefinite"/></path>
+  <g transform="translate(105 222)"><animateTransform attributeName="transform" type="translate" values="105 222;105 219;105 222" dur="1.4s" repeatCount="indefinite"/>
+  <path d="M14 66Q14 56 26 54L56 48L78 30Q84 26 92 26L134 26Q142 26 148 31L166 47L184 50Q194 52 194 62L194 70Q194 74 190 74L176 74A16 16 0 0 0 144 74L76 74A16 16 0 0 0 44 74L18 74Q14 74 14 70Z" fill="#F2F5F7"/>
+  <path d="M84 46L96 32L118 32L118 46ZM124 46L124 32L140 32L154 46Z" fill="#26384A"/>
+  <circle cx="60" cy="74" r="12" fill="#0B0F14"/><circle cx="160" cy="74" r="12" fill="#0B0F14"/>
+  <path d="M190 58 L320 40 L320 84Z" fill="#F6DCA6" opacity=".18"><animate attributeName="opacity" values=".12;.25;.12" dur="2s" repeatCount="indefinite"/></path></g></svg>`}
+ return `<svg class="bart" viewBox="0 0 390 356" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${sky}
+  ${[0,1,2,3,4,5].map(i=>`<rect x="${40+i*54}" y="${300-(60+i*30)}" width="34" height="${60+i*30}" rx="8" fill="${i===5?'#4FDDBF':'rgba(255,255,255,.14)'}"><animate attributeName="height" values="0;${60+i*30}" dur="1.2s" begin="${i*.12}s" fill="freeze"/><animate attributeName="y" values="300;${300-(60+i*30)}" dur="1.2s" begin="${i*.12}s" fill="freeze"/></rect>`).join('')}
+  <path d="M40 220 L110 190 L170 200 L230 150 L290 130 L340 80" stroke="#EACB93" stroke-width="3" fill="none" stroke-dasharray="420" stroke-dashoffset="420"><animate attributeName="stroke-dashoffset" values="420;0" dur="2s" begin=".6s" fill="freeze"/></path>
+  <circle cx="340" cy="80" r="6" fill="#EACB93"><animate attributeName="r" values="6;10;6" dur="1.6s" repeatCount="indefinite"/></circle></svg>`;
+}
+
+/* ================= chrome ================= */
+const sbar=(light,abs)=>`<div class="sbar ${light?'light':''} ${abs?'abs':''}"><span>9:41</span><span class="island"></span><span class="ic"><svg width="18" height="11" viewBox="0 0 18 11" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1" fill="currentColor"/><rect x="5" y="5" width="3" height="6" rx="1" fill="currentColor"/><rect x="10" y="2.5" width="3" height="8.5" rx="1" fill="currentColor"/><rect x="15" y="0" width="3" height="11" rx="1" fill="currentColor"/></svg><svg width="26" height="12" viewBox="0 0 26 12" aria-hidden="true"><rect x=".5" y=".5" width="22" height="11" rx="3" fill="none" stroke="currentColor" opacity=".4"/><rect x="2" y="2" width="17" height="8" rx="1.5" fill="currentColor"/><rect x="23.5" y="4" width="1.8" height="4" rx=".8" fill="currentColor" opacity=".5"/></svg></span></div>`;
+const wm=(light)=>`<span class="wm ${light?'light':''}" aria-label="تخارج Takharoj"><b>تخارج</b></span>`;
+const seg=(dark)=>`<div class="seg ${dark?'dark':''}" data-i="${S.v==='re'?0:1}" role="group" aria-label="المجال"><span class="thumb-s"></span><button data-v="re" aria-pressed="${S.v==='re'}">${ic('bldg','s')} عقارات</button><button data-v="car" aria-pressed="${S.v==='car'}">${ic('car','s')} سيارات</button></div>`;
+const tabbar=()=>{const t=[['home','home','الرئيسية'],['list','grid','الفرص'],['sell','plus',''],['calc','calc','الحاسبة'],['acct','user','حسابي']];
+ const cur={detail:'list',deal:'acct',leads:'acct',saved:'acct'}[S.screen]||S.screen;const idx=Math.max(0,['home','list','sell','calc','acct'].indexOf(cur));
+ return `<div class="gbot"><nav class="tabbar glass"><span class="pillbg" style="transform:translateX(${-idx*100}%);${cur==='sell'?'opacity:0':''}"></span>${t.map(([k,i,l])=>k==='sell'?`<button class="mid" data-go="sell" aria-label="تنازل">${ic(i)}</button>`:`<button data-go="${k}" aria-current="${cur===k}">${ic(i)}<span>${l}</span></button>`).join('')}</nav></div>`};
+const topBar=(inner,cls='')=>`<div class="gtop ${cls}">${sbar()}${inner}</div>`;
+const navRow=(title,sub,to,right='')=>`<div class="ahead"><button class="cbtn" data-back="${to}" aria-label="رجوع">${ic('back','s')}</button><div class="navtitle">${title}${sub?`<small>${sub}</small>`:''}</div>${right||'<span style="width:38px"></span>'}</div>`;
+
+/* ================= SPLASH ================= */
+function splash(){
+ return `<div class="splash"><div class="aur"><i></i><i></i></div><div class="grid"></div>${sbar(true,true)}
+ <div class="emblem">${EMBLEM}</div>
+ <div class="sp-word"><div class="sp-name"><b class="ar">تخارج</b><span class="en">${'TAKHAROJ'.split('').map((c,i)=>`<span style="animation-delay:${1.15+i*.05}s">${c}</span>`).join('')}</span></div>
+ <div class="sp-tag">أول منصة سعودية للتنازل عن عقود التقسيط<br>بدون زيادة على سعر العقد</div>
+ <div class="sp-chips"><span>${ic('bldg','s')} عقارات</span><span>${ic('car','s')} سيارات</span></div></div>
+ <div class="sp-load"><i></i></div><div class="sp-foot">المملكة العربية السعودية · v2.0</div></div>`;
+}
+
+/* ================= ONBOARDING ================= */
+const ONB=[
+ {eb:'للبائع',t:'استرد <em>كل اللي دفعته</em> كاش بدل خصم الإلغاء',p:'لا تخسر 10% من سعر وحدتك في الإلغاء. نلقى لك مشتري يدفع لك اللي دفعته بالضبط، وعمولتك صفر.',ill:'1'},
+ {eb:'للمشتري',t:'اشترِ <em>بسعر التعاقد القديم</em> وكسب الفرق من أول يوم',p:'وحدات وسيارات بأقل من سعر السوق اليوم. تكمل الأقساط الأصلية، وفي السيارات تحتفظ بنسبة الربح القديمة.',ill:'2'},
+ {eb:'الثقة أولًا',t:'كل رقم <em>موثّق بالمستندات</em> قبل ما يظهر لك',p:'نراجع العقد وإيصالات السداد والرصيد المتبقي، ونفحص السيارات فحصًا شاملًا. ما فيه أرقام على كلام أحد.',ill:'3'},
+ {eb:'خلنا نبدأ',t:'وش عندك، و<em>وش تبي تسوي؟</em>',p:'',ill:'4'}
+];
+function onboarding(){
+ const i=S.onb, s=ONB[i], last=i===ONB.length-1;
+ let ill='';
+ if(s.ill==='1')ill=`<div class="ill ill1"><span class="coin" style="top:20px;right:30px">ر.س</span><span class="coin" style="top:70px;left:24px;animation-delay:.6s;width:36px;height:36px;font-size:11px">ر.س</span><span class="coin" style="bottom:40px;right:12px;animation-delay:1.2s;width:30px;height:30px;font-size:10px">ر.س</span>
+  <div class="gcard"><span class="lbl">تستلم كاش عند إتمام التنازل</span><span class="num big" data-count="600000">0</span><div class="bar"><i></i></div><div class="row"><span>اللي دفعته</span><span>100% يرجع لك</span></div></div>
+  <span class="pill ok zero" style="background:#fff;padding:8px 12px">${ic('check','xs')} عمولة البائع: صفر</span></div>`;
+ if(s.ill==='2')ill=`<div class="ill ill2"><div class="bars2"><div class="col"><div class="colb m"><b>2,850,000</b></div>سعر السوق اليوم</div><div class="col"><div class="colb c"><b>2,400,000</b></div>سعر عقدك</div></div><div class="gainb"><small>مكسبك</small>+ <span data-count="420000">0</span></div></div>`;
+ if(s.ill==='3')ill=`<div class="ill ill3"><div class="seal">${ic('shield','l')}</div><div class="gcard"><div class="scanl"></div><b style="font-size:14px">ملف التحقق · S-20417</b>
+  ${[['عقد البيع على الخارطة','مراجَع'],['إيصالات السداد','12 إيصال'],['الرصيد المتبقي','مؤكد'],['قابلية التنازل','موافقة']].map(d=>`<div class="doc"><span class="ck">${ic('check','xs')}</span><span>${d[0]}</span><span>${d[1]}</span></div>`).join('')}</div></div>`;
+ const body=s.ill==='4'?`<div style="display:flex;flex-direction:column;gap:14px;animation:rise .6s var(--ease) both">
+  <div class="vpick"><button class="vp" data-v="re" aria-pressed="${S.v==='re'}"><span class="ico">${ic('bldg','l')}</span><b>عقار بالتقسيط</b><span>شقة، فيلا، أو محل على الخارطة</span></button>
+  <button class="vp" data-v="car" aria-pressed="${S.v==='car'}"><span class="ico" style="color:var(--a-sand-l)">${ic('car','l')}</span><b>سيارة ممولة</b><span>تأجير منتهي بالتمليك أو مرابحة</span></button></div>
+  <div class="rpick"><button class="rp" data-role="sell" aria-pressed="${S.role==='sell'}"><span class="rad"></span><span><b>أبي أتنازل عن عقدي</b><span>مالك فقط · بدون عمولة عليك</span></span></button>
+  <button class="rp" data-role="buy" aria-pressed="${S.role==='buy'}"><span class="rad"></span><span><b>أبي أشتري فرصة</b><span>أرقام موثقة قبل ما تدفع ريال</span></span></button></div></div>`:ill;
+ return `<div class="onb" data-s="${i}"><div class="aur"><i></i><i></i></div>${sbar(true)}
+ <div class="onb-top">${wm(true)}${last?'':`<button class="skip" data-onb="${ONB.length-1}">تخطي</button>`}</div>
+ <div class="onb-stage" id="onbStage">${body}<div class="onb-copy"><span class="eb">${s.eb}</span><h2 class="h-display">${s.t}</h2>${s.p?`<p>${s.p}</p>`:''}</div></div>
+ <div class="onb-foot"><div class="dots">${ONB.map((_,k)=>`<i class="${k===i?'on':''}"></i>`).join('')}</div>
+ ${last?`<button class="nextb start" data-go="${S.role==='sell'?'home':'list'}"><span class="lbl">ابدأ الحين</span><span class="go">${ic('fwd')}</span></button>`
+ :`<button class="nextb" data-onb="${i+1}"><span class="lbl">التالي</span><span class="go">${ic('fwd')}</span></button>`}</div></div>`;
+}
+
+/* ================= HOME ================= */
+const SLIDES={re:[
+ {k:'sky',eb:'فرص الأسبوع',t:'وحدات بسعر التعاقد القديم',p:'1,108 وحدة موثقة بالمستندات في الرياض وجدة والشرقية',cta:'تصفح الفرص',go:'list'},
+ {k:'calc',eb:'حاسبة الخروج',t:'اعرف موقفك قبل ما تلغي عقدك',p:'الفرق بين الإلغاء والتنازل ممكن يوصل 240,000 ر.س',cta:'احسب الحين',go:'calc'},
+ {k:'car',eb:'جديد · تخارج للسيارات',t:'سيارتك الممولة صار لها مخرج',p:'انقل التزامك واستلم قيمة حقك كاش',cta:'جرّب السيارات',v:'car'}],
+ car:[
+ {k:'car',eb:'فرص السيارات',t:'سيارات بنسبة الربح القديمة',p:'587 سيارة مفحوصة وتمويلها قابل للنقل',cta:'تصفح السيارات',go:'list'},
+ {k:'calc',eb:'حاسبة الخروج',t:'لا ترجع سيارتك للمزاد',p:'الفرق بين الاسترداد ونقل الالتزام ممكن يوصل 79,000 ر.س',cta:'احسب الحين',go:'calc'},
+ {k:'sky',eb:'تخارج للعقارات',t:'عندك وحدة على الخارطة؟',p:'استرد كل اللي دفعته بدون عمولة',cta:'جرّب العقارات',v:'re'}]};
+const TICK={re:[['bolt','فيلا 4 غرف · الرياض نزلت الحين','الحين'],['check','تم تنازل شقة في جدة · استرد البائع 290,000 ر.س','5 د'],['user','12 مشتري يشوفون «ضاحية الياسمين» الحين','مباشر'],['trend','متوسط مكسب المشترين هذا الأسبوع 312,000 ر.س','اليوم']],
+ car:[['bolt','لكزس ES 2024 · الدمام نزلت الحين','الحين'],['check','تم نقل التزام لاندكروزر · استلم البائع 98,000 ر.س','8 د'],['user','7 مشترين مؤهلين يشوفون «باترول LE»','مباشر'],['trend','متوسط توفير المشترين 24,500 ر.س','اليوم']]};
+const PH={re:['ابحث عن مشروع، حي، أو مطوّر','جرّب: فيلا في الياسمين','جرّب: كاش أقل من 300 ألف'],car:['ابحث عن ماركة، موديل، أو مدينة','جرّب: لاندكروزر 2024','جرّب: قسط أقل من 3,000']};
+const CATS={re:[['bldg','شقق',412],['villa','فلل',268],['grid','تاون هاوس',191],['store','محلات',237]],car:[['car','SUV',214],['crown','فاخرة',96],['gauge','سيدان',188],['leaf','اقتصادية',89]]};
+const FLOW={re:[['قيّم عقدك','أدخل بيانات العقد واعرف موقفك مجانًا'],['ارفع مستنداتك','العقد وإيصالات السداد وكشف المتبقي'],['نجهز فرصتك','نتحقق من الأرقام مع المطوّر ونعرضها'],['نلقى المشتري','مشتري نهائي قادر يكمل الأقساط'],['نقل التعاقد','إجراءات التنازل الرسمية حتى تستلم']],
+ car:[['قيّم تمويلك','أدخل قيمة العقد والمدفوع والمتبقي'],['ارفع مستنداتك','عقد التمويل والاستمارة وكشف الحساب'],['فحص السيارة','فحص شامل وتقرير حوادث قبل النشر'],['نلقى المشتري','مشتري تنطبق عليه شروط جهة التمويل'],['نقل الالتزام','موافقة جهة التمويل ونقل الملكية']]};
+
+function miniCalc(){const re=S.v==='re';
+ if(re){const paid=S.mini.re, ded=240000, back=Math.max(0,paid-ded), mx=1500000;
+  return {p:(paid-100000)/(1400000)*100, label:'اللي دفعته من وحدة بـ 2.4 مليون', val:paid, rows:[['لو ألغيت',back,'bad'],['عن طريق تخارج',paid,'good']], mx, delta:paid-back}}
+ const rem=S.mini.car, market=355000, paid=172600, back=Math.round(market*.8)-rem-8000, eq=Math.min(market-rem,paid), mx=300000;
+ return {p:(rem-50000)/250000*100, label:'المتبقي لجهة التمويل (سيارة بـ 355 ألف)', val:rem, rows:[['لو رجّعتها',Math.max(0,back),'bad'],['عن طريق تخارج',eq,'good']], mx, delta:eq-back, neg:back<0?-back:0};
+}
+function miniHTML(){const m=miniCalc();
+ return `<div class="top"><span class="muted" style="font-size:12.5px">${m.label}</span><b class="num">${fmt(m.val)}<span class="cur">ر.س</span></b></div>
+ <input class="rng" id="mini" type="range" aria-label="${m.label}" min="${S.v==='re'?100000:50000}" max="${S.v==='re'?1500000:300000}" step="${S.v==='re'?10000:2000}" value="${m.val}" style="--p:${m.p}%">
+ <div class="cmp" id="cmp">${cmpRows(m)}</div>`;
+}
+function cmpRows(m){return m.rows.map(r=>`<div class="r"><span>${r[0]}</span><span class="tr"><i class="${r[2]}" style="width:${Math.max(2,r[1]/m.mx*100)}%"></i></span><b>${fmt(r[1])}</b></div>`).join('')+
+ `<div class="dpill"><small>${m.neg?`بالاسترداد تبقى مديون ${fmt(m.neg)} ر.س · الفرق لصالحك`:'الفرق لصالحك'}</small><span class="num">+ ${fmt(m.delta)} ر.س</span></div>`}
+
+function fcard(l){const re=!l.make;return `<article class="card fcard" data-open="${l.id}" tabindex="0"><div class="thumb ${l.feat?'sheenx':''}">${art(l)}
+ <div class="tb">${re?`<span class="pill glass">${ic('shield','xs')} موثّق</span>`:`<span class="pill glass">${ic('gauge','xs')} ${l.score}/100</span>`}${l.hot?`<span class="pill glass" style="color:var(--a-red)">${ic('flame','xs')} رائج</span>`:''}</div>
+ <div class="tr"><button class="fav" data-fav="${l.id}" aria-label="حفظ" aria-pressed="${S.favs.has(l.id)}">${ic('heart','s')}</button></div></div>
+ <div class="fb"><div><h4>${nameOf(l)}</h4><div class="meta">${re?l.area:`${l.city} · ${fmt(l.km)} كم`}</div></div>
+ <div class="row"><div><small>${re?'المطلوب كاش':'كاش للبائع'}</small>${sar(l.cash)}</div><span class="gainchip">${ic('trend','xs')} +${fmt(gainOf(l))}</span></div></div></article>`}
+
+function home(){
+ const re=S.v==='re', sl=SLIDES[S.v], data=re?RE:CARS, tk=TICK[S.v][0];
+ return `<div class="scroll" id="hs">
+ <section class="banner" id="banner"><div class="slides">${sl.map((s,i)=>`<div class="bslide ${i===S.slide?'on':''}" data-slide="${i}">${bannerArt(s.k)}
+  <div class="bcopy"><span class="eb">${ic('sparkle','xs')} ${s.eb}</span><h2 class="h-display">${s.t}</h2><p>${s.p}</p><button class="btn gl-d bcta" ${s.go?`data-go="${s.go}"`:`data-v="${s.v}"`}>${s.cta} ${ic('fwd','xs')}</button></div></div>`).join('')}</div>
+  ${sbar(true,true)}
+  <div class="btop"><div style="display:flex;gap:8px"><button class="cbtn dark" aria-label="الإشعارات" data-acct="notif">${ic('bell','s')}<span class="dot"></span></button><button class="cbtn dark" data-theme-flip="1" aria-label="تبديل الوضع">${ic(isDark()?'sun':'moon','s')}</button></div>
+  <div class="greet"><span>مساء الخير</span><b>عبدالله 👋</b></div>${wm(true)}</div>
+  <div class="bprog">${sl.map((_,i)=>`<i class="${i<S.slide?'done':i===S.slide?'on':''}"><b></b></i>`).join('')}</div>
+ </section>
+ <div class="searchwrap"><button class="sfield" data-act="search">${ic('search')}<span class="ph" id="ph"><span>${PH[S.v][0]}</span></span><span class="fil" data-act="sheet" aria-label="فلترة">${ic('sliders','s')}</span></button></div>
+ <div class="pad" style="padding-top:16px">
+  ${seg()}
+  <div class="ticker card" style="margin-top:-8px"><span class="pill live"><span class="pulse"></span> مباشر</span><span class="tx" id="tick"><span>${tk[1]}</span></span><time id="tickt">${tk[2]}</time></div>
+  <div class="quick">${[['shield',re?'تنازل عن وحدتك':'تنازل عن سيارتك','sell'],['grid','تصفح الفرص','list'],['calc','حاسبة الخروج','calc'],['wallet','ميزانيتي','buy']].map(q=>`<button class="qa" data-go="${q[2]}"><span class="t card">${ic(q[0])}</span>${q[1]}</button>`).join('')}</div>
+
+  <div class="sec-t"><h3>${ic('star','s')} فرص مميزة</h3><button class="link" data-go="list">الكل ${ic('fwd','xs')}</button></div>
+  <div class="hscroll">${data.map(fcard).join('')}</div>
+
+  <div class="sec-t"><h3>${ic('calc','s')} احسبها بنفسك</h3><span class="muted" style="font-size:12px">حرّك المؤشر</span></div>
+  <div class="card mcalc" id="mcalc">${miniHTML()}</div>
+
+  <div class="sec-t"><h3>تصفح حسب النوع</h3></div>
+  <div class="cats">${CATS[S.v].map(c=>`<button class="cat card" data-go="list"><span class="ci">${ic(c[0])}</span>${c[1]}<small><span class="num" data-count="${c[2]}">0</span> ${re?'وحدة':'سيارة'}</small></button>`).join('')}</div>
+
+  <div class="stats"><div class="card stat"><small>${re?'وحدات على المنصة':'سيارات على المنصة'}</small><span class="num v" data-count="${re?1284:642}">0</span>
+   <svg class="spark" viewBox="0 0 140 34" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="sparkFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4FDDBF"/><stop offset="1" stop-color="#4FDDBF" stop-opacity="0"/></linearGradient></defs><path class="a" d="M0 30 L20 26 L40 28 L60 18 L80 20 L100 10 L120 12 L140 4 V34 H0Z"/><path class="l" d="M0 30 L20 26 L40 28 L60 18 L80 20 L100 10 L120 12 L140 4"/></svg></div>
+   <div class="card stat"><small>متوسط مكسب المشتري</small><span class="num v"><span data-count="${re?312:24.5}" data-dec="${re?0:1}">0</span><span class="cur">${re?'ألف ر.س':'ألف ر.س'}</span></span>
+   <svg class="spark" viewBox="0 0 140 34" preserveAspectRatio="none" aria-hidden="true"><path class="a" d="M0 26 L20 28 L40 20 L60 22 L80 14 L100 16 L120 8 L140 6 V34 H0Z"/><path class="l" d="M0 26 L20 28 L40 20 L60 22 L80 14 L100 16 L120 8 L140 6"/></svg></div></div>
+
+  <div class="sec-t"><h3>كيف نشتغل</h3><span class="muted" style="font-size:12px">مسؤول حالة معك</span></div>
+  <div class="card flow" id="flow">${flowHTML()}</div>
+
+  <div class="sec-t"><h3>معايير الخروج العادل</h3></div>
+  <div class="card trust">${[['shield','كل رقم له مصدر','نوضح لك وش المؤكد بالمستندات ووش التقديري'],['wallet','مجانًا للبائع بالكامل','المشتري يدفع 1.25% عند إتمام النقل فقط'],['eyeoff','خصوصيتك محفوظة','الخروج الصامت بدون إعلان علني أو اتصالات مزعجة'],['info','بدون ضغط','نعرض عليك كل الخيارات حتى لو الأفضل إنك تكمل']].map(t=>`<div class="tr2"><span class="ti">${ic(t[0],'s')}</span><div><b>${t[1]}</b><span>${t[2]}</span></div></div>`).join('')}</div>
+
+  <div class="appcta"><b style="font-family:var(--f-display);font-size:18px">${re?'ما تقدر تكمل أقساطك؟':'التزام سيارتك صار ثقيل؟'}</b><p>لا تستعجل في قرار الإلغاء. اعرف موقفك أول، التقييم مجاني وبدون أي التزام.</p><button class="btn pri" data-go="sell" style="align-self:flex-start">${re?'ابدأ تقييم عقدك':'ابدأ تقييم تمويلك'}</button></div>
+ </div></div>
+ ${topBar(`<div class="ahead"><button class="cbtn" aria-label="القائمة">${ic('menu','s')}</button>${wm()}<button class="cbtn" data-act="search" aria-label="بحث">${ic('search','s')}</button></div>`,'float')}
+ ${tabbar()}`;
+}
+function flowHTML(){const f=FLOW[S.v], i=S.flowI;
+ return `<div class="track"><span class="line"><i style="--f:${i/(f.length-1)}"></i></span>${f.map((s,k)=>`<div class="st ${k<=i?'on':''}"><span class="k">${k<i?ic('check','xs'):k+1}</span>${s[0]}</div>`).join('')}</div>
+ <div class="desc"><b>${f[i][0]}:</b> ${f[i][1]}</div>`}
+
+/* ================= SEARCH ================= */
+function searchOverlay(){
+ return `<div class="sx" role="dialog" aria-label="بحث"><div class="sx-h"><label class="sx-in">${ic('search','s')}<input id="sxq" placeholder="${PH[S.v][0]}" value="${S.q}" autocomplete="off"></label><button class="sx-c" data-act="sxclose">إلغاء</button></div>
+ <div class="sx-b" id="sxb">${searchBody()}</div></div>`}
+function hl(t,q){if(!q)return t;const i=t.indexOf(q);return i<0?t:t.slice(0,i)+`<mark>${q}</mark>`+t.slice(i+q.length)}
+function searchBody(){const q=S.q.trim();
+ if(!q)return `<div><h5>عمليات بحث سابقة</h5><div class="sx-chips">${['فيلا الياسمين','لاندكروزر','شقة جدة','كاش أقل من 300 ألف'].map(c=>`<button class="chip" data-sq="${c.split(' ')[0]}">${ic('hist','xs')} ${c}</button>`).join('')}</div></div>
+ <div><h5>المدن الأكثر طلبًا</h5><div class="sx-chips">${['الرياض','جدة','الدمام','الخبر'].map(c=>`<button class="chip" data-sq="${c}">${ic('pin','xs')} ${c}</button>`).join('')}</div></div>
+ <div><h5>رائج الحين</h5><div style="display:flex;flex-direction:column;gap:8px">${[RE[0],CARS[0],CARS[1]].map(resRow).join('')}</div></div>`;
+ const mt=l=>[l.proj,l.area,l.type,l.dev,l.make,l.model,l.city,String(l.year||'')].some(x=>x&&x.includes(q));
+ const r1=RE.filter(mt), r2=CARS.filter(mt);
+ if(!r1.length&&!r2.length)return `<div style="text-align:center;padding:40px 10px;color:var(--a-muted)">${ic('search','l')}<p>ما لقينا نتائج لـ «${q}». جرّب اسم حي أو ماركة، أو سجّل طلبك ونرسل لك أول ما تنزل فرصة.</p><button class="btn pri" data-go="buy">سجّل طلبك</button></div>`;
+ return (r1.length?`<div><h5>عقارات · ${r1.length}</h5><div style="display:flex;flex-direction:column;gap:8px">${r1.map(l=>resRow(l,q)).join('')}</div></div>`:'')+(r2.length?`<div><h5>سيارات · ${r2.length}</h5><div style="display:flex;flex-direction:column;gap:8px">${r2.map(l=>resRow(l,q)).join('')}</div></div>`:'');
+}
+function resRow(l,q=''){return `<button class="card sres" data-open="${l.id}"><span class="th">${art(l)}</span><span><b>${hl(nameOf(l),q)}</b><span>${hl(l.make?l.city:l.area,q)} · كاش ${fmt(l.cash)}</span></span><span class="num">+${fmt(gainOf(l))}</span></button>`}
+
+/* ================= LIST ================= */
+const SORTS=['الأنسب لي','الأحدث','الأقل كاش','أقل قسط','الأكبر مكسب','جاهزة للنقل'];
+function sorted(){const re=S.v==='re';let a=(re?RE:CARS).slice();
+ if(S.sort===2)a.sort((x,y)=>x.cash-y.cash);
+ if(S.sort===3)a.sort((x,y)=>(re?x.inst:x.monthly)-(re?y.inst:y.monthly));
+ if(S.sort===4)a.sort((x,y)=>gainOf(y)-gainOf(x));
+ if(S.sort===5)a.sort((x,y)=>(y.ready||y.score>=95?1:0)-(x.ready||x.score>=95?1:0));
+ return a}
+function reCard(l){return `<article class="card lcard" data-open="${l.id}" tabindex="0"><div class="thumb">${artRe(l.hue)}
+ <div class="tb"><span class="pill glass">${ic('shield','xs')} متحقق بالمستندات</span>${l.feat?`<span class="pill glass featc">${ic('star','xs')} مميزة</span>`:''}</div>
+ <div class="tr"><button class="fav" data-fav="${l.id}" aria-label="حفظ" aria-pressed="${S.favs.has(l.id)}">${ic('heart','s')}</button></div></div>
+ <div class="lbody"><div class="ltitle"><div><h4>${l.proj}</h4><div class="meta">${l.dev} · ${l.area}</div></div><span class="code">${l.code}</span></div>
+ <div style="display:flex;gap:6px;flex-wrap:wrap">${l.hot?`<span class="pill hot">${ic('flame','xs')} الأكثر طلبًا هذا الأسبوع</span>`:''}${l.neg?`<span class="pill neu">قابل للتفاوض ↓</span>`:''}${l.ready?`<span class="pill ok">جاهز للنقل</span>`:''}</div>
+ <div class="meta" style="color:var(--a-ink);font-weight:500">${l.type} · ${l.specs}</div>
+ <div class="price"><div><small>المطلوب كاش الحين</small>${sar(l.cash,'cash')}</div><div class="gain"><small>مكسبك عن سعر السوق</small><span class="num">+ ${fmt(reGain(l))}</span></div></div>
+ <div class="mini"><div>المتبقي للمطور<b>${fmt(l.remain)}</b></div><div>القسط<b>${fmt(l.inst)} · ${l.freq}</b></div><div>الاستلام<b>${l.deliv}</b></div></div></div></article>`}
+function carCard(c){const k=carCalc(c);return `<article class="card lcard" data-open="${c.id}" tabindex="0"><div class="thumb">${artCar(c)}
+ <div class="tb"><span class="pill glass">${ic('gauge','xs')} فحص ${c.score}/100</span>${c.feat?`<span class="pill glass featc">${ic('star','xs')} مميزة</span>`:''}</div>
+ <div class="tr"><button class="fav" data-fav="${c.id}" aria-label="حفظ" aria-pressed="${S.favs.has(c.id)}">${ic('heart','s')}</button></div></div>
+ <div class="lbody"><div class="ltitle"><div><h4>${c.make} ${c.model} ${c.year}</h4><div class="meta">${c.city} · ${fmt(c.km)} كم · ${c.color}</div></div><span class="code">${c.code}</span></div>
+ <div style="display:flex;gap:6px;flex-wrap:wrap"><span class="pill neu">${c.fin}</span>${c.hot?`<span class="pill hot">${ic('flame','xs')} الأكثر طلبًا</span>`:''}${c.neg?`<span class="pill neu">قابل للتفاوض ↓</span>`:''}</div>
+ <div class="price"><div><small>المطلوب كاش للبائع</small>${sar(c.cash,'cash')}</div><div class="gain"><small>توفيرك المتوقع</small><span class="num">+ ${fmt(k.gain)}</span></div></div>
+ <div class="mini"><div>المتبقي للتمويل<b>${fmt(c.remain)}</b></div><div>القسط الشهري<b>${fmt(c.monthly)}</b></div><div>أقساط متبقية<b>${c.left} من ${c.total}</b></div></div></div></article>`}
+function list(){const re=S.v==='re';
+ return `<div class="scroll"><div class="pad" style="padding-top:0">
+ <p class="muted" style="margin:0;font-size:12.5px;line-height:1.7">${re?'كل فرصة هنا انراجع عقدها وإيصالاتها ورصيدها المتبقي قبل ما تظهر. بدون زيادة على سعر العقد.':'كل سيارة هنا انفحصت وانراجع عقد تمويلها ورصيدها المتبقي قبل ما تظهر.'}</p>
+ <div class="sec-t"><span class="muted" style="font-size:12.5px"><b class="num" style="color:var(--a-ink)">${re?'1,108':'587'}</b> ${re?'وحدة متاحة':'سيارة متاحة'}</span><button class="link" data-go="buy">سجّل قدرتك الشرائية</button></div>
+ ${sorted().map(re?reCard:carCard).join('')}
+ <p class="note">${re?'سعر السوق من صاحب الوحدة ومسؤوليته، والمكسب معروض بعد خصم عمولة المنصة 1.25% على المشتري.':'القيمة السوقية تقديرية من تقرير الفحص. التوفير يشمل فرق السعر وفرق نسبة الربح بعد خصم عمولة 1.25%.'}</p></div></div>
+ ${topBar(`<div class="ahead" style="padding-bottom:4px"><span style="width:38px"></span>${wm()}<button class="cbtn" data-act="sheet" aria-label="فلترة">${ic('sliders','s')}</button></div>
+ <h1 class="largetitle">${re?'الفرص المتاحة':'سيارات متاحة'}</h1>${seg()}
+ <div style="padding:0 16px 10px;display:flex;flex-direction:column;gap:10px"><div class="lsearch"><button class="sfield" data-act="search">${ic('search','s')}<span class="ph"><span>${PH[S.v][0]}</span></span></button></div>
+ <div class="chips" role="group" aria-label="الترتيب">${SORTS.map((s,i)=>`<button class="chip" data-sort="${i}" aria-pressed="${S.sort===i}">${s}</button>`).join('')}</div></div>`)}
+ ${tabbar()}`}
+function sheet(){const re=S.v==='re';
+ return `<div class="scrim" data-act="close"><div class="sheet" role="dialog" aria-label="فلترة" data-stop="1"><span class="grab"></span>
+ <div class="sec-t"><h4>فلترة النتائج</h4><button class="link" data-act="close">إعادة ضبط</button></div>
+ <div class="grp"><span>المدينة</span><div class="opts" data-multi="1">${['الرياض','جدة','الدمام','الخبر','مكة','المدينة'].map((c,i)=>`<button class="opt" aria-pressed="${i<2}">${c}</button>`).join('')}</div></div>
+ ${re?`<div class="grp"><span>نوع الوحدة</span><div class="opts" data-multi="1">${['شقة','فيلا','تاون هاوس','دوبلكس','محل','مكتب'].map((c,i)=>`<button class="opt" aria-pressed="${i===1}">${c}</button>`).join('')}</div></div>`
+ :`<div class="grp"><span>الماركة</span><div class="opts" data-multi="1">${['تويوتا','لكزس','نيسان','هيونداي','كيا','فورد'].map((c,i)=>`<button class="opt" aria-pressed="${i===0}">${c}</button>`).join('')}</div></div>
+ <div class="grp"><span>نوع التمويل</span><div class="opts"><button class="opt" aria-pressed="true">تأجير منتهي بالتمليك</button><button class="opt">مرابحة</button></div></div>`}
+ <div class="grp"><span>أقصى كاش مطلوب · <b class="num" id="rv">${re?'500,000':'100,000'}</b> ر.س</span><input class="rng" type="range" id="frng" aria-label="أقصى كاش" min="${re?100000:20000}" max="${re?1000000:200000}" step="${re?10000:2000}" value="${re?500000:100000}" style="--p:${re?44:44}%"></div>
+ <div class="grp"><span>${re?'نظام القسط':'أقصى قسط شهري'}</span><div class="opts">${(re?['ربع سنوي','نصف سنوي','سنوي','شهري']:['حتى 2,000','حتى 4,000','حتى 6,000','أكثر']).map((c,i)=>`<button class="opt" aria-pressed="${i===0}">${c}</button>`).join('')}</div></div>
+ <button class="btn pri block" data-act="close">عرض ${re?'214 وحدة':'96 سيارة'}</button></div></div>`}
+
+/* ================= DETAIL ================= */
+function detail(){const re=S.v==='re';const l=(re?RE:CARS).find(x=>x.id===S.id)||(re?RE[0]:CARS[0]);
+ const head=`<div class="dhero"><div class="thumb">${art(l)}</div><div class="over">${re?`<span class="pill glass">${ic('shield','xs')} متحقق بالمستندات</span>`:`<span class="pill glass">${ic('gauge','xs')} فحص شامل ${l.score}/100</span><span class="pill glass">${l.fin}</span>`}${l.feat?`<span class="pill glass featc">${ic('star','xs')} مميزة</span>`:''}</div></div>`;
+ const top=`${sbar(false,true)}<div class="dtop"><button class="cbtn" data-back="list" aria-label="رجوع">${ic('back','s')}</button><div class="g"><button class="cbtn" aria-label="مشاركة">${ic('share','s')}</button><button class="cbtn fav" data-fav="${l.id}" aria-label="حفظ" aria-pressed="${S.favs.has(l.id)}">${ic('heart','s')}</button></div></div>`;
+ let body;
+ if(re){const c=l.cash+l.remain, fee=Math.round(c*COMM), g=reGain(l), mx=l.market;
+ body=`<div><span class="ltitle"><span class="code">${l.code}</span></span><h2 class="h-display" style="font-size:23px">${l.proj}</h2><div class="meta" style="margin-top:4px">${l.dev} · ${l.area}</div><div class="meta" style="color:var(--a-ink);margin-top:6px">${l.type} · ${l.specs} · استلام ${l.deliv}</div></div>
+ <div class="delta"><div><small>مكسبك عن سعر السوق من أول يوم</small><div class="num">+ <span data-count="${g}">0</span> ر.س</div></div>${ic('tag','l')}</div>
+ <div class="card table"><div class="r hl"><span>المطلوب كاش للبائع (اللي دفعه بالضبط)</span><b class="num">${fmt(l.cash)}</b></div>
+ <div class="r"><span>المتبقي للمطور</span><b class="num">${fmt(l.remain)}</b></div><div class="r"><span>إجمالي سعر التعاقد</span><b class="num">${fmt(c)}</b></div>
+ <div class="r"><span>سعر السوق اليوم</span><b class="num">${fmt(l.market)}</b></div><div class="r"><span>عمولة المنصة 1.25% (عند الإتمام فقط)</span><b class="num">− ${fmt(fee)}</b></div>
+ <div class="r total"><span>مكسبك</span><span class="num">+ ${fmt(g)} ر.س</span></div></div>
+ <div class="card bars"><b style="font-size:14px">سعر العقد مقابل السوق</b>
+ <div class="bar"><span>سعر عقدك</span><div class="track"><i class="seg1" style="width:${l.cash/mx*100}%"></i><i class="seg2" style="width:${l.remain/mx*100}%;animation-delay:.2s"></i></div></div>
+ <div class="bar"><span>سعر السوق</span><div class="track"><i class="seg1" style="width:${l.cash/mx*100}%"></i><i class="seg2" style="width:${l.remain/mx*100}%;animation-delay:.2s"></i><i class="seg3" style="width:${(mx-c)/mx*100}%;animation-delay:.4s"></i></div></div>
+ <div class="legend"><span><i style="background:var(--seg1)"></i>كاش للبائع</span><span><i style="background:#9DB0BE"></i>أقساط متبقية</span><span><i style="background:var(--a-mint)"></i>فرق السعر</span></div></div>
+ <div class="sec-t"><h3>حالة التحقق</h3><span class="pill ok">4 من 4</span></div>
+ <div class="card vlist">${[['عقد البيع على الخارطة','مراجَع'],['إيصالات السداد','12 إيصال'],['الرصيد المتبقي','مؤكد من المطور'],['قابلية التنازل','موافقة مبدئية']].map(v=>`<div class="vitem"><span class="c">${ic('check','xs')}</span><span>${v[0]}</span><span>${v[1]}</span></div>`).join('')}</div>
+ <div class="sec-t"><h3>الأقساط القادمة</h3><span class="muted" style="font-size:12px">${l.freq}</span></div>
+ <div class="card sched">${['يناير 2027','أبريل 2027','يوليو 2027','أكتوبر 2027'].map((d,i)=>`<div class="r"><span>${d}</span><span class="muted">قسط ${i+9}</span><b class="num">${fmt(l.inst)}</b></div>`).join('')}</div>
+ <p class="note">الأرقام استرشادية وتعتمد على بنود العقد الفعلي. سعر السوق من صاحب الوحدة ومسؤوليته وليس تقييمًا من المنصة. تخارج منصة وساطة وليست طرفًا في عقد الوحدة.</p>`;}
+ else{const k=carCalc(l);
+ body=`<div><span class="ltitle"><span class="code">${l.code}</span></span><h2 class="h-display" style="font-size:23px">${l.make} ${l.model} ${l.year}</h2><div class="meta" style="margin-top:4px">${l.city} · ${fmt(l.km)} كم · ${l.gear} · ${l.color}</div></div>
+ <div class="delta"><div><small>توفيرك المتوقع طول مدة التمويل</small><div class="num">+ <span data-count="${k.gain}">0</span> ر.س</div></div>${ic('tag','l')}</div>
+ <div class="card"><div class="sec-t" style="padding:14px 16px 10px"><b style="font-size:14px">نسبة الربح</b><span class="muted" style="font-size:12px">ثابتة حتى آخر قسط</span></div>
+ <div class="rate"><div class="old">نسبة عقدك<b>${l.oldRate}%</b>سنويًا (ثابتة)</div><div class="new">تمويل جديد اليوم<b>${l.newRate}%</b>متوسط السوق</div></div></div>
+ <div class="card table"><div class="r hl"><span>المطلوب كاش للبائع</span><b class="num">${fmt(l.cash)}</b></div>
+ <div class="r"><span>المتبقي لجهة التمويل (${l.left} قسط × ${fmt(l.monthly)})</span><b class="num">${fmt(l.remain)}</b></div>
+ <div class="r"><span>القيمة السوقية بعد الفحص</span><b class="num">${fmt(l.market)}</b></div>
+ <div class="r"><span>فرق السعر عن السوق</span><b class="num">+ ${fmt(k.price)}</b></div><div class="r"><span>توفير فرق نسبة الربح</span><b class="num">+ ${fmt(k.rate)}</b></div>
+ <div class="r"><span>عمولة المنصة 1.25% (عند الإتمام فقط)</span><b class="num">− ${fmt(k.fee)}</b></div>
+ <div class="r total"><span>توفيرك المتوقع</span><span class="num">+ ${fmt(k.gain)} ر.س</span></div></div>
+ <div class="sec-t"><h3>تقرير الفحص</h3><button class="link">التقرير الكامل</button></div>
+ <div class="card insp"><div class="ring" style="--p:${l.score}"><div>${l.score}</div></div><ul><li>${ic('check','xs')} المحرك وناقل الحركة سليم</li><li>${ic('check','xs')} لا حوادث مسجلة في السجل</li><li>${ic('check','xs')} الضمان: ${l.warranty}</li><li>${ic('info','xs')} رش خفيف بالصدام الأمامي</li></ul></div>
+ <div class="sec-t"><h3>حالة التحقق</h3><span class="pill ok">4 من 4</span></div>
+ <div class="card vlist">${[['عقد التمويل','مراجَع'],['كشف الحساب والمتبقي','مؤكد من جهة التمويل'],['الاستمارة والتأمين','سارية'],['قابلية نقل الالتزام','حسب أهلية المشتري']].map(v=>`<div class="vitem"><span class="c">${ic('check','xs')}</span><span>${v[0]}</span><span>${v[1]}</span></div>`).join('')}</div>
+ <p class="note">نقل الالتزام يتطلب موافقة جهة التمويل على أهلية المشتري (الدخل والسجل الائتماني). نتحقق من أهليتك مبدئيًا قبل الحجز حتى ما يضيع وقتك.</p>`;}
+ return `<div class="scroll">${head}<div class="dsheet"><div class="pad" style="padding-top:20px">${body}</div></div></div>${top}
+ <div class="gbot"><div class="ctabar"><button class="btn gl" aria-label="محادثة">${ic('chat','s')}</button><button class="btn pri">${re?'احجز الفرصة وكلّم مسؤول الحالة':'تحقق من أهليتك واحجز معاينة'}</button></div></div>`;
+}
+
+/* ================= CALC ================= */
+function fld(k,label,val,u,hint,grp){return `<div class="field"><label for="f-${k}">${label} <span class="req">*</span></label><div class="inp"><input id="f-${k}" inputmode="numeric" data-k="${k}" ${grp?`data-g="${grp}"`:''} value="${fmt(val)}"><span class="u">${u}</span></div>${hint?`<small>${hint}</small>`:''}</div>`}
+function calc(){const re=S.v==='re', o=S.calcTab==='owner';let fields='';
+ if(o&&re){const c=S.cre;fields=`${fld('price','إجمالي سعر الوحدة في العقد',c.price,'ر.س','السعر الكلي المكتوب في عقدك مع المطوّر')}${fld('paid','إجمالي اللي دفعته لين اليوم',c.paid,'ر.س','الدفعة الأولى + كل الأقساط المسددة')}${fld('years','دفعت المبلغ على كم سنة؟',c.years,'سنة','من تاريخ التعاقد لآخر قسط سددته')}
+ <div class="field"><label>نسبة خصم الإلغاء في عقدك</label><div class="opts">${[5,10,15].map(p=>`<button class="opt" data-pct="${p}" aria-pressed="${c.pct===p}">${p}%</button>`).join('')}<button class="opt">ما أعرف</button></div></div>`}
+ else if(o){const c=S.ccar;fields=`${fld('total','إجمالي قيمة عقد التمويل',c.total,'ر.س','شامل الدفعة الأولى والأرباح')}${fld('paid','إجمالي اللي دفعته لين اليوم',c.paid,'ر.س','الدفعة الأولى + الأقساط المسددة')}${fld('remain','المتبقي لجهة التمويل',c.remain,'ر.س','من كشف الحساب أو تطبيق البنك')}${fld('market','القيمة السوقية لسيارتك (إن عرفتها)',c.market,'ر.س','نحددها بدقة بعد الفحص')}`}
+ else{const b=S.buy;fields=`${fld('cash','الكاش المتاح معك الحين',b.cash,'ر.س','المبلغ اللي تقدر تدفعه فورًا للبائع','buy')}${fld('inst',re?'أقصى قسط يريحك':'أقصى قسط شهري يريحك',b.inst,'ر.س','','buy')}
+ ${re?`<div class="field"><label>نظام القسط</label><div class="opts">${['شهري','ربع سنوي','نصف سنوي','سنوي'].map(f=>`<button class="opt" data-freq="${f}" aria-pressed="${b.freq===f}">${f}</button>`).join('')}</div></div>`:''}`}
+ return `<div class="scroll"><div class="pad" style="padding-top:0">
+ <div class="tabs2"><button data-ctab="owner" aria-pressed="${o}">${re?'أنا صاحب وحدة':'أنا صاحب سيارة'}</button><button data-ctab="buyer" aria-pressed="${!o}">أنا مشتري</button></div>
+ <div class="card form">${fields}</div><div id="calcOut" class="result">${calcOut()}</div>
+ <p class="note">الحسبة استرشادية وما تغني عن مراجعة عقدك الفعلي. النسب والشروط تختلف من عقد لعقد.</p></div></div>
+ ${topBar(`<div class="ahead" style="padding-bottom:4px"><span style="width:38px"></span>${wm()}<span style="width:38px"></span></div><h1 class="largetitle" style="padding-bottom:2px">حاسبة الخروج الآمن</h1><p class="muted" style="margin:0 18px 10px;font-size:12.5px">${re?'الفرق الحقيقي بين إلغاء التعاقد ونقله لمشتري جديد':'الفرق بين إرجاع السيارة لجهة التمويل ونقل الالتزام'}</p>${seg()}`)}
+ ${tabbar()}`}
+function calcOut(){const re=S.v==='re';
+ if(S.calcTab==='owner'&&re){const c=S.cre;const ded=c.price*c.pct/100;const back=Math.max(0,c.paid-ded);const lossPct=c.paid?Math.round(ded/c.paid*100):0;
+  return `<div class="rcard bad"><div class="t">${ic('x','s')} لو ألغيت التعاقد</div><div class="r"><span>خصم الإلغاء (${c.pct}% من سعر الوحدة)</span><b>− ${fmt(ded)}</b></div><div class="r"><span>اللي يرجع لك</span><b class="num bigv">${fmt(back)} ر.س</b></div><div class="r"><span>غالبًا على دفعات خلال</span><b>${Math.max(1,Math.round(c.years*8))} شهر</b></div><div class="r"><span>خسارتك من فلوسك</span><b>${Math.min(100,lossPct)}%</b></div></div>
+  <div class="rcard good"><div class="t">${ic('check','s')} لو تنازلت عن طريق تخارج</div><div class="r"><span>تسترد كل اللي دفعته كاش</span><b class="num bigv">${fmt(c.paid)} ر.س</b></div><div class="r"><span>عمولة المنصة عليك</span><b>صفر</b></div></div>
+  <div class="delta"><small>الفرق لصالحك</small><span class="num">+ ${fmt(c.paid-back)} ر.س</span></div><button class="btn pri block" data-go="sell">اطلب تقرير الخروج المجاني</button>`}
+ if(S.calcTab==='owner'){const c=S.ccar;const auction=Math.round(c.market*.8), fees=8000;const back=auction-c.remain-fees;const eq=Math.max(0,c.market-c.remain);
+  return `<div class="rcard bad"><div class="t">${ic('x','s')} لو رجّعت السيارة لجهة التمويل</div><div class="r"><span>بيع بالمزاد (≈80% من القيمة)</span><b>${fmt(auction)}</b></div><div class="r"><span>سداد المتبقي + رسوم الاسترداد</span><b>− ${fmt(c.remain+fees)}</b></div><div class="r"><span>${back>=0?'اللي يرجع لك':'تبقى مديون بـ'}</span><b class="num bigv" style="${back<0?'color:var(--a-red)':''}">${fmt(Math.abs(back))} ر.س</b></div></div>
+  <div class="rcard good"><div class="t">${ic('check','s')} لو نقلت الالتزام عن طريق تخارج</div><div class="r"><span>تستلم قيمة حقك كاش، بحد أقصى</span><b class="num bigv">${fmt(Math.min(eq,c.paid))} ر.س</b></div><div class="r"><span>والمشتري يكمل</span><b>${fmt(c.remain)} للبنك</b></div><div class="r"><span>عمولة المنصة عليك</span><b>صفر</b></div></div>
+  <div class="delta"><small>الفرق لصالحك</small><span class="num">+ ${fmt(Math.min(eq,c.paid)-back)} ر.س</span></div><button class="btn pri block" data-go="sell">اطلب فحص وتقييم مجاني</button>`}
+ const b=S.buy;const pool=re?RE:CARS;const m=pool.filter(l=>l.cash<=b.cash&&(re?l.inst:l.monthly)<=b.inst);
+ return `<div class="delta"><small>فرص تناسب ميزانيتك الحين</small><span class="num">${m.length} من ${pool.length}</span></div>
+ ${m.slice(0,3).map(l=>resRow(l)).join('')||'<p class="note">ما فيه فرص مطابقة حاليًا. سجّل قدرتك الشرائية ونرسل لك أول ما تنزل فرصة.</p>'}
+ <button class="btn pri block" data-go="buy">سجّل قدرتك الشرائية وفعّل التنبيهات</button>`}
+
+/* ================= SELL ================= */
+const SELL_T=['بيانات الأصل','الأرقام','المستندات','طريقة العرض','المراجعة','تم الإرسال'];
+function tx(l,v,u='',h=''){return `<div class="field"><label>${l}</label><div class="inp"><input value="${v}" aria-label="${l}">${u?`<span class="u">${u}</span>`:''}</div>${h?`<small>${h}</small>`:''}</div>`}
+function sell(){const re=S.v==='re', s=S.sellStep;let body='';
+ if(s===1)body=re?`${tx('المطوّر','دار المسار للتطوير')}${tx('اسم المشروع','ضاحية الياسمين')}${tx('المدينة والحي','الرياض · حي الياسمين')}<div class="field"><label>نوع الوحدة</label><div class="opts">${['شقة','فيلا','تاون هاوس','محل'].map((t,i)=>`<button class="opt" aria-pressed="${i===1}">${t}</button>`).join('')}</div></div>`
+  :`${tx('الماركة والموديل','تويوتا لاندكروزر GXR')}${tx('سنة الصنع','2024')}${tx('الممشى الحالي','38,000 كم')}<div class="field"><label>نوع التمويل</label><div class="opts"><button class="opt" aria-pressed="true">تأجير منتهي بالتمليك</button><button class="opt">مرابحة</button></div></div>${tx('جهة التمويل','بنك / شركة تمويل')}`;
+ if(s===2)body=re?`${tx('إجمالي سعر الوحدة في العقد','2,400,000','ر.س')}${tx('إجمالي اللي دفعته لين اليوم','600,000','ر.س')}<div class="check"><span class="box">${ic('check','xs')}</span><span>أؤكد إني فاهم إن المبلغ اللي بستلمه هو اللي دفعته بالضبط، بدون أي زيادة.</span></div>${tx('سعر نفس الوحدة من المطوّر اليوم (إن عرفته)','2,850,000','ر.س','نستخدمه لنحسب للمشتري كم يوفر. إذا مو متأكد اتركه ونتحقق إحنا.')}`
+  :`${tx('إجمالي قيمة عقد التمويل','412,000','ر.س')}${tx('اللي دفعته لين اليوم','172,600','ر.س')}${tx('المتبقي لجهة التمويل','239,400','ر.س')}<div class="check"><span class="box">${ic('check','xs')}</span><span>أفهم إن المطلوب من المشتري ما يتجاوز قيمة حقي الفعلية (القيمة السوقية بعد الفحص ناقص المتبقي)، ولا يتجاوز اللي دفعته.</span></div>`;
+ if(s===3){const docs=re?[['file','عقد البيع على الخارطة',1],['wallet','إيصالات السداد',1],['file','كشف المتبقي من المطوّر',0],['user','الهوية الوطنية',0]]:[['file','عقد التمويل',1],['wallet','كشف الحساب',1],['car','الاستمارة',0],['camera','صور السيارة (8)',0]];
+  body=`<div class="ups">${docs.map(d=>`<button class="up ${d[2]?'done':''}" data-up="1"><span class="ic">${ic(d[2]?'check':d[0])}</span><b>${d[1]}</b><small>${d[2]?'تم الرفع · PDF':'صوّر أو ارفع ملف'}</small></button>`).join('')}</div>
+  <button class="btn gl block">${ic('scan','s')} افتح الماسح الذكي</button><p class="note">الماسح يقص الصفحة ويحسّن وضوحها تلقائيًا. ملفاتك مشفّرة وما يشوفها إلا فريق المراجعة.</p>`}
+ if(s===4)body=`<div class="choice"><button class="ch" data-silent="1" aria-pressed="${S.silent}"><span class="ic">${ic('eyeoff')}</span><span><b>خروج صامت</b><span>ما ننشر إعلان علني. نعرض ${re?'وحدتك':'سيارتك'} على مشترين مسجلين ومؤهلين فقط.</span></span></button>
+  <button class="ch" data-silent="0" aria-pressed="${!S.silent}"><span class="ic">${ic('megaphone')}</span><span><b>عرض عام على المنصة</b><span>تظهر في الفرص لكل المستخدمين. أسرع بيعًا، وبدون اسمك أو رقمك.</span></span></button></div>
+  <div class="field"><label>أنسب وقت نتواصل معك</label><div class="opts">${['الصباح','بعد العصر','المساء'].map((t,i)=>`<button class="opt" aria-pressed="${i===1}">${t}</button>`).join('')}</div></div>`;
+ if(s===5)body=`<div class="card table">${(re?[['الأصل','فيلا دوبلكس · ضاحية الياسمين'],['المدينة','الرياض · حي الياسمين'],['سعر العقد','2,400,000 ر.س'],['تستلم كاش','600,000 ر.س'],['المستندات','4 من 4'],['طريقة العرض',S.silent?'خروج صامت':'عرض عام']]:[['الأصل','لاندكروزر GXR 2024'],['التمويل','تأجير منتهي بالتمليك'],['المتبقي','239,400 ر.س'],['تستلم كاش','حتى 115,600 ر.س بعد الفحص'],['المستندات','4 من 4'],['طريقة العرض',S.silent?'خروج صامت':'عرض عام']]).map(r=>`<div class="r"><span class="muted">${r[0]}</span><b>${r[1]}</b></div>`).join('')}
+  <div class="r total"><span>عمولة المنصة عليك</span><span>صفر</span></div></div><p class="note">بالإرسال توافق على الشروط وسياسة الخصوصية. نراجع طلبك خلال يومي عمل.</p>`;
+ if(s===6)return `<div class="scroll"><div class="pad" style="padding-top:60px"><div class="success"><span class="badge">${ic('check')}</span><h2 class="h-display" style="font-size:24px">وصلنا طلبك</h2><p class="muted" style="margin:0;line-height:1.8;font-size:13.5px">رقم الطلب <b class="num" style="color:var(--a-ink)">${re?'S-21877':'C-31402'}</b>. مسؤول حالتك بيتواصل معك خلال يومي عمل، وحسابك جاهز تتابع منه كل خطوة.</p></div>
+  <div class="card tl">${tlItems(1)}</div><button class="btn pri block" data-go="acct">تابع طلبك</button><button class="btn gl block" data-go="home">الرئيسية</button></div></div>${topBar('')}`;
+ return `<div class="scroll"><div class="pad" style="padding-top:0">${s===1?`<div class="owner">${ic('user','s')}<span><b>ملّاك فقط.</b> نتعامل مع صاحب ${re?'الوحدة':'العقد'} مباشرة. طلبات الوسطاء تُستبعد لأن وجود وسيط يضيف هامشًا ويلغي فكرة السعر بدون زيادة.</span></div>`:''}
+ <div class="card form" style="animation:rise .45s var(--ease) both">${body}</div></div></div>
+ ${topBar(navRow(re?'تنازل عن وحدتك':'تنازل عن سيارتك','','home')+`<div class="prog">${SELL_T.map((_,i)=>`<i class="${i<s?'on':''}"></i>`).join('')}</div><div class="wz-h" style="padding-bottom:12px"><small>خطوة ${s} من 6</small><h3>${SELL_T[s-1]}</h3></div>`)}
+ <div class="gbot"><div class="wz-foot"><button class="btn gl" data-sstep="${Math.max(1,s-1)}" ${s===1?'disabled style="opacity:.4"':''}>السابق</button><button class="btn pri" data-sstep="${s+1}">${s===5?'أرسل الطلب':'كمّل'}</button></div></div>`}
+
+/* ================= BUY ================= */
+function buy(){const re=S.v==='re', s=S.buyStep;let body='';
+ if(s===1)body=`${tx('الكاش المتاح معك الحين','400,000','ر.س','المبلغ اللي تقدر تدفعه فورًا لصاحب '+(re?'الوحدة':'السيارة'))}${tx(re?'أقصى قسط يريحك':'أقصى قسط شهري','60,000','ر.س')}${re?`<div class="field"><label>نظام القسط</label><div class="opts">${['شهري','ربع سنوي','نصف سنوي','سنوي'].map((t,i)=>`<button class="opt" aria-pressed="${i===1}">${t}</button>`).join('')}</div></div>`:''}`;
+ if(s===2)body=re?`<div class="field"><label>المدن</label><div class="opts" data-multi="1">${['الرياض','جدة','الدمام','الخبر','مكة'].map((t,i)=>`<button class="opt" aria-pressed="${i<2}">${t}</button>`).join('')}</div></div><div class="field"><label>نوع الوحدة</label><div class="opts" data-multi="1">${['شقة','فيلا','تاون هاوس','محل'].map((t,i)=>`<button class="opt" aria-pressed="${i!==3}">${t}</button>`).join('')}</div></div>${tx('سعر التعاقد المستهدف (الميزانية)','2,500,000','ر.س','أقصى سعر تعاقد أصلي تقبل توصل له')}`
+  :`<div class="field"><label>الماركات</label><div class="opts" data-multi="1">${['تويوتا','لكزس','نيسان','هيونداي','كيا'].map((t,i)=>`<button class="opt" aria-pressed="${i<2}">${t}</button>`).join('')}</div></div><div class="field"><label>سنة الصنع من</label><div class="opts">${['2021','2022','2023','2024'].map((t,i)=>`<button class="opt" aria-pressed="${i===2}">${t}</button>`).join('')}</div></div>${tx('صافي راتبك الشهري','28,000','ر.س','لنتحقق مبدئيًا من أهليتك لنقل الالتزام')}`;
+ if(s===3)body=`<div class="delta"><small>فرص تناسبك الحين</small><span class="num" data-count="${re?37:22}">0</span></div>
+  <div class="card" style="box-shadow:none"><div class="setrow">${ic('bell','s')} إشعار فوري أول ما تنزل فرصة<button class="sw" aria-pressed="true" aria-label="تفعيل"></button></div><div class="setrow">${ic('chat','s')} تنبيه واتساب<button class="sw" aria-pressed="false" aria-label="تفعيل"></button></div></div>
+  <div class="owner">${ic('user','s')}<span><b>مشترين فقط.</b> نتعامل مع المشتري النهائي مباشرة، وما نقبل طلبات وسطاء يدورون لعملاء.</span></div>
+  <p class="note">عمولتنا 1.25% فقط عند إتمام النقل، معلنة من البداية. المشترين المسجلين يشوفون الفرص قبل نشرها.</p>`;
+ return `<div class="scroll"><div class="pad" style="padding-top:0"><div class="card form" style="animation:rise .45s var(--ease) both">${body}</div></div></div>
+ ${topBar(navRow('قدرتك الشرائية','','list')+`<div class="prog">${[1,2,3].map(i=>`<i class="${i<=s?'on':''}"></i>`).join('')}</div><div class="wz-h" style="padding-bottom:12px"><small>خطوة ${s} من 3</small><h3>${['ميزانيتك','وش تدور عليه','التنبيهات'][s-1]}</h3></div>`)}
+ <div class="gbot"><div class="wz-foot"><button class="btn gl" data-bstep="${Math.max(1,s-1)}" ${s===1?'disabled style="opacity:.4"':''}>السابق</button><button class="btn pri" ${s===3?'data-go="list"':`data-bstep="${s+1}"`}>${s===3?'شوف الفرص المطابقة':'كمّل'}</button></div></div>`}
+
+/* ================= ACCOUNT ================= */
+function tlItems(cur){const re=S.v==='re';
+ const it=re?[['تقييم العقد','تقرير الخروج: التنازل أفضل لك بفرق 240,000 ر.س'],['المستندات','4 مستندات تمت مراجعتها'],['تجهيز الفرصة','منشورة كخروج صامت منذ 6 أيام'],['إيجاد المشتري','3 مشترين مهتمين · معاينة الخميس 4:30 م'],['نقل التعاقد','توقيع التنازل عند المطوّر واستلام المبلغ']]
+ :[['تقييم التمويل','قيمة حقك التقديرية 115,600 ر.س'],['المستندات','عقد التمويل وكشف الحساب مراجَعة'],['الفحص','فحص شامل 94/100 · منشورة منذ 4 أيام'],['إيجاد المشتري','مشتريان مؤهلان مبدئيًا · معاينة السبت'],['نقل الالتزام','موافقة جهة التمويل ونقل الملكية']];
+ return it.map((x,i)=>`<div class="tli ${i<cur?'done':i===cur?'cur':''}"><span class="d">${i<cur?ic('check','xs'):i+1}</span><div><b>${x[0]}</b><p>${x[1]}</p>${i===cur?`<span class="pill feat">جاري الآن</span>`:''}</div></div>`).join('')}
+function acct(){const re=S.v==='re', t=S.acct;let body='';
+ if(t==='deals')body=`<div class="card"><div style="display:flex;gap:12px;align-items:center;padding:14px 16px;border-bottom:1px solid var(--g-sep)"><div style="width:64px;height:48px;border-radius:12px;overflow:hidden;flex:none">${re?artRe(168):artCar(CARS[0])}</div><div style="min-width:0"><b style="font-size:14px">${re?'ضاحية الياسمين · فيلا':'لاندكروزر GXR 2024'}</b><div class="meta">${re?'S-20417 · تستلم 600,000 ر.س':'C-30112 · تستلم 98,000 ر.س'}</div></div></div><div class="tl">${tlItems(3)}</div></div>
+  <div class="card mgr"><span class="av">ر</span><div><b style="font-size:13.5px">ريم العتيبي</b><div class="meta">مسؤولة حالتك · ترد خلال ساعة</div></div><button class="btn pri" style="margin-inline-start:auto;padding:10px 12px" aria-label="محادثة">${ic('chat','s')}</button></div>`;
+ if(t==='notif')body=`<div class="card">${[['bell','نزلت فرصة تطابق طلبك',re?'فيلا 4 غرف · الرياض · كاش 580,000':'لكزس ES 2024 · كاش 72,000','الحين'],['user','مشتري جديد مهتم',re?'طلب معاينة لوحدتك الخميس':'طلب معاينة لسيارتك السبت','2 س'],['shield','اكتملت مراجعة مستنداتك','كل الأرقام متطابقة مع الإيصالات','أمس'],['cal','تذكير بالقسط القادم',re?'قسط يناير 75,000 ر.س':'قسط نوفمبر 5,700 ر.س','3 أيام']].map(n=>`<div class="notif"><span class="ic">${ic(n[0],'s')}</span><div><b>${n[1]}</b><span>${n[2]}</span></div><time>${n[3]}</time></div>`).join('')}</div>`;
+ if(t==='set')body=`<div class="card"><div class="setrow">${ic('face','s')} قفل التطبيق ببصمة الوجه<button class="sw" data-act="face" aria-pressed="${S.faceid}" aria-label="بصمة الوجه"></button></div><div class="setrow">${ic('bell','s')} الإشعارات<button class="sw" aria-pressed="true" aria-label="الإشعارات"></button></div><div class="setrow" style="flex-wrap:wrap">${ic(isDark()?'moon':'sun','s')} المظهر<div class="opts" style="margin-inline-start:auto">${[['light','فاتح'],['dark','داكن'],['auto','تلقائي']].map(o=>`<button class="opt" data-theme-set="${o[0]}" aria-pressed="${S.theme===o[0]}">${o[1]}</button>`).join('')}</div></div><div class="setrow">${ic('globe','s')} الدولة<span class="v">السعودية</span></div><div class="setrow">${ic('globe','s')} اللغة<span class="v">العربية</span></div><div class="setrow">${ic('heart','s')} المفضلة<span class="v">${S.favs.size}</span></div></div>
+  <p class="note">تخارج منصة وساطة وتسهيل معاملات، وليست مطوّرًا عقاريًا أو جهة تمويل ولا طرفًا في العقد الأصلي.</p>`;
+ return `<div class="scroll"><section class="prof">${sbar(true,true)}<div class="who"><span class="av">ع</span><div><b style="font-size:17px">عبدالله الشهري</b><div style="font-size:12px;color:rgba(255,255,255,.65)">مالك · عضو منذ سبتمبر 2026</div></div><button class="cbtn dark" style="margin-inline-start:auto" aria-label="الإشعارات" data-acct="notif">${ic('bell','s')}<span class="dot"></span></button></div>
+ <div class="kpis"><button data-go="deal"><b data-count="1">0</b>صفقة نشطة${ic('fwd','xs')}</button><button data-go="leads"><b data-count="${LEADS[S.v].length}">0</b>مهتمين${ic('fwd','xs')}</button><button data-go="saved"><b>${S.favs.size}</b>محفوظة${ic('fwd','xs')}</button></div></section>
+ <div class="pad"><div class="tabs2" style="grid-template-columns:repeat(3,1fr)">${[['deals','صفقاتي'],['notif','التنبيهات'],['set','الإعدادات']].map(x=>`<button data-acct="${x[0]}" aria-pressed="${t===x[0]}">${x[1]}</button>`).join('')}</div>${body}</div></div>${tabbar()}`}
+
+/* ================= ACCOUNT SUB-PAGES ================= */
+const LEADS={re:[
+ {n:'م. السبيعي',c:'الرياض',st:'معاينة مؤكدة',when:'الخميس 4:30 م',tag:['أهلية مؤكدة','كاش جاهز'],tone:'ok'},
+ {n:'ف. القحطاني',c:'الرياض',st:'طلب نسخة العقد',when:'منذ ساعتين',tag:['أهلية مؤكدة'],tone:'feat'},
+ {n:'ع. الزهراني',c:'جدة',st:'يدرس الفرصة',when:'منذ يوم',tag:['مسجّل ميزانية'],tone:'neu'}],
+ car:[
+ {n:'س. العنزي',c:'الرياض',st:'معاينة مؤكدة',when:'السبت 6:00 م',tag:['موافقة مبدئية من البنك','كاش جاهز'],tone:'ok'},
+ {n:'ن. الدوسري',c:'الخرج',st:'التحقق من الأهلية',when:'منذ 3 ساعات',tag:['راتب مسجّل'],tone:'feat'}]};
+function subTop(title,sub){return topBar(navRow(title,sub,'acct'))}
+function deal(){const re=S.v==='re', l=re?RE[0]:CARS[0];
+ return `<div class="scroll"><div class="pad" style="padding-top:4px">
+ <div class="card dealhead"><div class="thumb">${art(l)}<div class="tb"><span class="pill glass">${ic('shield','xs')} ${re?'خروج صامت':'فحص 94/100'}</span></div></div>
+  <div class="dh"><div class="ltitle"><div><h4 style="font-family:var(--f-display);margin:0;font-size:16px">${nameOf(l)}</h4><div class="meta">${re?l.area:l.city} · منشورة منذ ${re?6:4} أيام</div></div><span class="code">${l.code}</span></div>
+  <div class="amt"><div><small>تستلم كاش عند الإتمام</small>${sar(l.cash)}</div><span class="pill ok">عمولتك صفر</span></div></div></div>
+ <div class="sec-t"><h3>الخطوة القادمة</h3></div>
+ <div class="card nextup"><span class="cal"><small>${re?'الخميس':'السبت'}</small><b>${re?24:26}</b><small>أكتوبر</small></span><div><b>${re?'معاينة الوحدة مع م. السبيعي':'معاينة السيارة مع س. العنزي'}</b><p>${re?'4:30 م · موقع المشروع، حي الياسمين':'6:00 م · مركز الفحص، شمال الرياض'}</p></div><button class="cbtn" style="margin-inline-start:auto" aria-label="إضافة للتقويم">${ic('cal','s')}</button></div>
+ <div class="sec-t"><h3>مراحل الصفقة</h3><span class="pill feat">3 من 5</span></div>
+ <div class="card tl">${tlItems(3)}</div>
+ <div class="sec-t"><h3>المستندات</h3></div>
+ <div class="card">${(re?[['عقد البيع على الخارطة','مراجَع'],['إيصالات السداد (12)','مراجَعة'],['كشف المتبقي من المطوّر','مؤكد'],['موافقة المطوّر على التنازل','بانتظار المشتري']]:[['عقد التمويل','مراجَع'],['كشف الحساب','مؤكد'],['تقرير الفحص','94/100'],['موافقة جهة التمويل','بانتظار المشتري']]).map((d,i)=>`<div class="docrow">${ic('file','s')}<span>${d[0]}</span><span class="pill ${i<3?'ok':'neu'}">${d[1]}</span></div>`).join('')}</div>
+ <div class="card mgr"><span class="av">ر</span><div><b style="font-size:13.5px">ريم العتيبي</b><div class="meta">مسؤولة حالتك · ترد خلال ساعة</div></div><button class="btn pri" style="margin-inline-start:auto;padding:10px 12px" aria-label="محادثة">${ic('chat','s')}</button></div>
+ </div></div>${subTop('صفقتي النشطة',l.code)}${tabbar()}`}
+function leads(){const re=S.v==='re', L=LEADS[S.v];
+ return `<div class="scroll"><div class="pad" style="padding-top:4px">
+ <div class="lsum"><div class="card"><b>${L.length}</b>مهتمين</div><div class="card"><b>1</b>معاينة مؤكدة</div><div class="card"><b>${re?27:19}</b>مشاهدة</div></div>
+ <p class="note">${re?'وحدتك معروضة كخروج صامت، فيشوفها المشترين المسجلين والمؤهلين بس.':'نعرض سيارتك على مشترين تحققنا مبدئيًا من أهليتهم عند جهة التمويل.'} بيانات التواصل تبقى محفوظة، والتنسيق يكون عن طريق مسؤول حالتك.</p>
+ ${L.map((b,i)=>`<div class="card lead"><div class="who"><span class="av" style="${i?'background:linear-gradient(160deg,#5B7FA8,#2E4E74)':''}">${b.n.split(' ')[1].replace(/^ال/,'')[0]}</span><div><b>مشتري موثّق · ${b.n}</b><span>${ic('pin','xs')} ${b.c} · ${b.when}</span></div><span class="pill ${b.tone}" style="margin-inline-start:auto">${b.st}</span></div>
+  <div class="tags">${b.tag.map(t=>`<span class="pill neu">${ic('check','xs')} ${t}</span>`).join('')}</div>
+  <div class="acts">${i===0?`<button class="btn pri">${ic('cal','s')} تأكيد الموعد</button><button class="btn gl">${ic('chat','s')} عبر مسؤول الحالة</button>`:`<button class="btn gl">${ic('file','s')} ${i===1?'إرسال المطلوب':'تذكير المشتري'}</button><button class="btn gl">${ic('chat','s')} عبر مسؤول الحالة</button>`}</div></div>`).join('')}
+ </div></div>${subTop('المهتمين',re?'ضاحية الياسمين':'لاندكروزر GXR')}${tabbar()}`}
+function saved(){const items=[...RE,...CARS].filter(l=>S.favs.has(l.id));
+ return `<div class="scroll"><div class="pad" style="padding-top:4px">
+ ${items.length?`<p class="note">بننبهك لو تغيّر سعر أو حالة أي فرصة محفوظة.</p>`+items.map(l=>l.make?carCard(l):reCard(l)).join(''):`<div class="empty"><span class="ei">${ic('heart','l')}</span><b style="color:var(--a-ink)">ما حفظت أي فرصة لسه</b><span>اضغط على القلب في أي فرصة عشان توصل لها بسرعة وتجيك تنبيهات بأي تغيير.</span><button class="btn pri" data-go="list">تصفح الفرص</button></div>`}
+ </div></div>${subTop('المحفوظة',items.length+' فرصة')}${tabbar()}`}
+
+/* ================= notes ================= */
+const NOTES={
+ splash:{t:'السبلاش',d:['شعار بريميوم: أبراج بخطوط ذهبية تنرسم، وسيارة فاخرة تدخل قدامها بإضاءة كشافات، وبعدها الاسم تحتها. وبعدها اسم «تخارج» ينكشف من اليمين و TAKHAROJ تطلع حرف حرف.','خلفية aurora تدور ببطء وشبكة خفيفة توحي بالدقة، وشريط تحميل بلون الماركة.','مدته حوالي 3 ثواني، وبعدها يتلاشى بزووم ناعم والترحيب يدخل بنفس الخلفية. اللمس في أي مكان يتخطاه على طول.'],l:['شاشة واحدة لكل الدولة، وتعرض المجالين (عقارات وسيارات) من البداية.'],replay:1},
+ onb:{t:'الترحيب (4 شاشات)',d:['كل شريحة لها رسم متحرك يشرح فكرة بالأرقام: عداد الكاش، أعمدة سعر السوق مقابل العقد، وملف تحقق تتعلم بنوده واحد واحد.','اسحب يمين ويسار أو استخدم زر التالي اللي حوله حلقة تقدم. النقاط تتمدد بحركة spring، ولون الـ aurora يتغير مع كل شريحة.','الشريحة الأخيرة تختار المجال والدور وتحدد أول شاشة.'],l:['تصفح بدون تسجيل، والدخول برقم الجوال (OTP) فقط عند إرسال طلب أو حجز.']},
+ home:{t:'الرئيسية',d:['بانر علوي متحرك بثلاث مشاهد حية: مدينة بنوافذ تضوي، سيارة على طريق متحرك، ورسم بياني ينمو. يتبدل كل 5 ثواني بمؤشر تقدم مثل الستوري.','حقل بحث زجاجي فوق البانر مع نص توضيحي يتبدل. اضغطه يفتح البحث.','لايف: شريط «مباشر» يتحدث، أرقام تعد، خطوط بيانية تنرسم، خطوات «كيف نشتغل» تتقدم لوحدها، وإشعار يظهر من فوق بعد ثواني.','حاسبة مصغرة بمؤشر سحب تحدّث المقارنة مباشرة.','عند النزول يظهر شريط علوي زجاجي مضغوط.','زر الشمس والقمر في البانر يبدّل بين الوضع الفاتح والداكن بانتقال دائري يطلع من الزر نفسه. التطبيق يفتح فاتح افتراضيًا، والوضع التلقائي في الإعدادات يتبع إعداد الجهاز.'],l:()=>S.v==='re'?['الرسالة: البائع يسترد المدفوع كاملًا كاش، والمشتري يأخذ سعر التعاقد القديم.','الحاسبة المصغرة: الإلغاء = المدفوع − 10% من سعر الوحدة، والتنازل = المدفوع كاملًا.']:['السيارة تنزل قيمتها مع الوقت، فالبائع يستلم قيمة حقه = القيمة السوقية بعد الفحص − المتبقي، وبحد أقصى اللي دفعه.','الحاسبة المصغرة: الاسترداد = 80% من القيمة − المتبقي − الرسوم.']},
+ search:{t:'البحث',d:['طبقة زجاجية بتمويه كامل، والكيبورد يفتح على طول.','قبل الكتابة: عمليات بحث سابقة، مدن رائجة، وفرص رائجة. مع الكتابة: نتائج مباشرة مقسمة عقارات وسيارات مع تظليل الكلمة.','جرّب تكتب: الرياض، جدة، لكزس، فيلا.'],l:['البحث يغطي المجالين، والنتيجة تفتح التفاصيل وتحوّل المجال تلقائيًا.','إذا ما فيه نتائج يعرض «سجّل طلبك» عشان ما يضيع المستخدم.']},
+ list:{t:'الفرص المتاحة',d:['عنوان كبير بأسلوب iOS، و segmented control بخلفية تنزلق، وشرائح الترتيب زجاجية.','البطاقات تدخل بتتابع، وزر المفضلة ينبض لما تضغطه.'],l:()=>['ترتيب: الأنسب لي، الأحدث، الأقل كاش، أقل قسط، الأكبر مكسب، جاهزة للنقل.'],f:()=>S.v==='re'?'<b>مكسب المشتري</b> = سعر السوق − (الكاش + المتبقي) − 1.25% × سعر التعاقد':'<b>توفير المشتري</b> = (القيمة السوقية − الكاش − المتبقي) + المتبقي × فرق نسبة الربح × السنوات المتبقية − 1.25%'},
+ detail:{t:'تفاصيل الفرصة',d:['صورة بعرض كامل وعليها ورقة زجاجية تطلع من تحت، وأزرار دائرية زجاجية فوقها.','رقم المكسب يعد، وأعمدة سعر العقد مقابل السوق تكبر بالتتابع.'],l:()=>S.v==='re'?['كل رقم بمصدره، والمكسب بعد خصم 1.25%.','التحقق 4 بنود: العقد، الإيصالات، الرصيد المؤكد، قابلية التنازل.']:['تقرير الفحص ونسبة الربح القديمة مقابل نسبة السوق اليوم.','الحجز يبدأ بتحقق مبدئي من أهلية المشتري عند جهة التمويل.']},
+ calc:{t:'حاسبة الخروج الآمن',d:['النتائج تتحدث مع كل رقم تكتبه، وبطاقات النتيجة تدخل بحركة.'],l:()=>['تبويب المشتري يطابق الميزانية مع الفرص المتاحة.'],f:()=>S.v==='re'?'<b>الإلغاء</b>: يرجع لك = المدفوع − (نسبة الخصم × سعر الوحدة)<br><b>التنازل</b>: يرجع لك = المدفوع كاملًا، عمولة صفر':'<b>الاسترداد</b>: 80% × القيمة السوقية − المتبقي − الرسوم<br><b>نقل الالتزام</b>: أقل قيمة من (القيمة السوقية − المتبقي) و (المدفوع)'},
+ sell:{t:'رحلة البائع (6 خطوات)',d:['شريط تقدم يمتلئ مع كل خطوة، والأزرار ثابتة في شريط زجاجي تحت. الإرسال ينتهي بعلامة صح تنرسم وتنبض.'],l:()=>['بيانات، أرقام مع إقرار «بدون زيادة»، مستندات بالماسح، طريقة العرض (خروج صامت افتراضيًا)، مراجعة، إرسال.','«ملّاك فقط» عشان ما يدخل وسيط يرفع السعر.']},
+ buy:{t:'القدرة الشرائية',d:['3 خطوات بنفس شريط التقدم. عدد الفرص المطابقة يعد في آخر خطوة.'],l:()=>['في السيارات نطلب الراتب لأن جهة التمويل لازم توافق على المشتري.','المشترين المسجلين يوصلهم إشعار قبل النشر العام.']},
+ deal:{t:'صفقتي النشطة',d:['تفتح من مربع «صفقة نشطة» في حسابي بحركة push، والتاب بار يفضل ظاهر على «حسابي».','كارت الخطوة القادمة بتقويم ملوّن، والخطوة الحالية في المراحل تنبض.'],l:()=>['كل اللي يحتاجه البائع في مكان واحد: المبلغ اللي بيستلمه، الموعد القادم، المراحل الخمس، حالة كل مستند، ومسؤول الحالة.','آخر مستند دايمًا «بانتظار المشتري» لأن موافقة المطوّر أو جهة التمويل تحصل بعد اختيار المشتري.']},
+ leads:{t:'المهتمين',d:['ملخص بالأرقام فوق، وبعدها كروت المشترين تدخل بتتابع.'],l:()=>['المشتري يظهر باسم مختصر ومدينة بس عشان الخصوصية، والتواصل يمر عن طريق مسؤول الحالة.','كل مشتري عليه حالته (معاينة، طلب مستندات، يدرس) وشارات الأهلية، وفي السيارات تظهر موافقة البنك المبدئية.']},
+ saved:{t:'المحفوظة',d:['نفس كروت الفرص، وشيل القلب يحدّث القائمة على طول. لو القائمة فاضية تظهر شاشة توجه المستخدم للفرص.'],l:()=>['المحفوظة تجمع العقارات والسيارات مع بعض، وتنبيه عند تغيّر السعر أو الحالة.']},
+ acct:{t:'حسابي ومتابعة الصفقة',d:['هيدر كحلي فيه توهج يتحرك، والخطوة الحالية في المتتبع تنبض.'],l:()=>['المتتبع يعكس نفس الخطوات الخمس، ومسؤول حالة واحد لكل صفقة.','بصمة الوجه والدولة في الإعدادات.']}
+};
+const RAIL=[['البداية',[['splash','السبلاش'],['onb','الترحيب']]],['الرئيسية',[['home','الرئيسية'],['search','البحث']]],['المشتري',[['list','الفرص المتاحة'],['detail','تفاصيل الفرصة'],['buy','القدرة الشرائية']]],['البائع',[['calc','حاسبة الخروج'],['sell','رحلة التنازل']]],['الحساب',[['acct','حسابي'],['deal','صفقتي النشطة'],['leads','المهتمين'],['saved','المحفوظة']]]];
+
+/* ================= render ================= */
+const app=document.getElementById('app'), host=document.getElementById('host'), notes=document.getElementById('notes'), rail=document.getElementById('rail');
+const MAP={splash,onb:onboarding,home,list,detail,calc,sell,buy,acct,deal,leads,saved};
+const ORDER=['splash','onb','home','list','detail','buy','calc','sell','acct','deal','leads','saved'];
+function render(mode){
+ timers.forEach(t=>{clearInterval(t);clearTimeout(t)});timers=[];uid=0;
+ const keep=mode==='keep';const oldSc=host.querySelector('.scroll');const top=keep&&oldSc?oldSc.scrollTop:0;
+ app.className=appCls();
+ const anim=keep?'':(mode||'fade');
+ host.innerHTML=`<div class="screen ${anim}">${MAP[S.screen]()}${S.search?searchOverlay():''}${S.sheet?sheet():''}</div>`;
+ const sc=host.querySelector('.scroll');
+ const gt=host.querySelector('.gtop:not(.float)');
+ if(sc){ if(gt){sc.style.paddingTop=gt.offsetHeight+'px'} sc.scrollTop=top; }
+ mount();
+ // rail + notes
+ if(!rail)return;const cur=S.search?'search':S.screen;let n=1;
+ rail.innerHTML=RAIL.map(([g,items])=>`<h2>${g}</h2>`+items.map(([k,l])=>`<button type="button" data-rail="${k}" aria-current="${cur===k}"><span class="n">${String(n++).padStart(2,'0')}</span>${l}</button>`).join('')).join('');
+ const N=NOTES[cur];const L=typeof N.l==='function'?N.l():N.l;
+ notes.innerHTML=`<span class="eyebrow">${S.v==='re'?'عقارات':'سيارات'} · ${N.t}</span><h3>${N.t}</h3><h4>الحركة والتجربة</h4><ul>${N.d.map(x=>`<li>${x}</li>`).join('')}</ul><h4>منطق البيزنس</h4><ul>${L.map(x=>`<li>${x}</li>`).join('')}</ul>${N.f?`<div class="formula">${N.f()}</div>`:''}${N.replay?'<button class="replay" data-rail="splash">إعادة تشغيل السبلاش</button>':''}`;
+ document.querySelectorAll('.vtoggle [data-v]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.v));
+ document.querySelectorAll('.vtoggle [data-theme-set]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.themeSet===S.theme));
+}
+function countUp(root){root.querySelectorAll('[data-count]').forEach(el=>{const to=+el.dataset.count, dec=+(el.dataset.dec||0);
+ if(RM){el.textContent=dec?to.toFixed(dec):fmt(to);return}
+ const t0=performance.now(), d=1300;(function f(t){const p=Math.min(1,(t-t0)/d), e=1-Math.pow(1-p,3), v=to*e;el.textContent=dec?v.toFixed(dec):fmt(v);if(p<1)requestAnimationFrame(f)})(t0)})}
+function mount(){
+ countUp(host);
+ if(S.screen==='splash'&&!S.search){later(leaveSplash,3100)}
+ if(S.screen==='onb'){const st=host.querySelector('.onb');let x0=null;
+  st.addEventListener('pointerdown',e=>{x0=e.clientX});
+  st.addEventListener('pointerup',e=>{if(x0===null)return;const dx=e.clientX-x0;x0=null;if(Math.abs(dx)<50)return;
+   const n=dx>0?Math.min(ONB.length-1,S.onb+1):Math.max(0,S.onb-1);if(n!==S.onb){S.onb=n;render(dx>0?'push':'pop')}});}
+ if(S.screen==='home'){
+  const sc=host.querySelector('#hs'), ft=host.querySelector('.gtop.float'), bn=host.querySelector('#banner');
+  sc.addEventListener('scroll',()=>{ft.classList.toggle('show',sc.scrollTop>250);if(!RM)bn.querySelector('.slides').style.transform=`translateY(${sc.scrollTop*.35}px)`},{passive:true});
+  const sl=SLIDES[S.v];
+  every(()=>{S.slide=(S.slide+1)%sl.length;bn.querySelectorAll('.bslide').forEach((b,i)=>b.classList.toggle('on',i===S.slide));
+   bn.querySelectorAll('.bprog i').forEach((b,i)=>{b.className=i<S.slide?'done':i===S.slide?'on':''})},5000);
+  let ti=0;every(()=>{ti=(ti+1)%TICK[S.v].length;const t=TICK[S.v][ti];const el=host.querySelector('#tick');if(el){el.innerHTML=`<span>${t[1]}</span>`;host.querySelector('#tickt').textContent=t[2]}},3200);
+  let pi=0;every(()=>{pi=(pi+1)%PH[S.v].length;const el=host.querySelector('#ph');if(el)el.innerHTML=`<span>${PH[S.v][pi]}</span>`},2800);
+  every(()=>{S.flowI=(S.flowI+1)%5;const f=host.querySelector('#flow');if(f)f.innerHTML=flowHTML()},1800);
+  later(()=>{if(S.screen!=='home'||S.search)return;const l=(S.v==='re'?RE:CARS)[1];const d=document.createElement('div');d.className='notif-toast';d.dataset.open=l.id;
+   d.innerHTML=`<span class="ai">${EMBLEM.replace('<svg','<svg style="width:32px;height:auto"').replace(/id="em/g,'id="emx').replace(/url\(#em/g,'url(#emx')}</span><div><b>فرصة جديدة تطابق طلبك</b><span>${nameOf(l)} · مكسب +${fmt(gainOf(l))}</span></div><time>الحين</time>`;
+   host.querySelector('.screen').appendChild(d);later(()=>d.remove(),4800)},4200);
+ }
+ if(S.search){const i=host.querySelector('#sxq');if(i){i.focus({preventScroll:true});i.setSelectionRange(i.value.length,i.value.length)}}
+}
+function go(s,mode){
+ if(s==='search'){S.search=true;S.q='';if(!['home','list'].includes(S.screen))S.screen='home';render('keep');return}
+ const from=ORDER.indexOf(S.screen), to=ORDER.indexOf(s);
+ S.prev=S.screen;S.screen=s;S.sheet=false;S.search=false;
+ if(s==='sell')S.sellStep=1;if(s==='buy')S.buyStep=1;if(s==='home')S.slide=0;
+ const tabs=['home','list','calc','acct'];
+ render(mode||(tabs.includes(s)&&tabs.includes(S.prev)?'fade':(to<from?'pop':'push')));
+}
+
+/* splash -> onboarding: fade + zoom out, onboarding fades in */
+let leaving=false;
+function leaveSplash(){if(S.screen!=='splash'||leaving)return;leaving=true;const sp=host.querySelector('.splash');
+ const done=()=>{leaving=false;S.onb=0;go('onb','enter')};
+ if(RM||!sp){done();return}sp.classList.add('out');setTimeout(done,420)}
+
+/* ================= theme ================= */
+function setTheme(t,el){const was=isDark();S.theme=t;const now=isDark();
+ const apply=()=>{app.className=appCls();render('keep')};
+ if(was===now||RM||!document.startViewTransition){apply();return}
+ const r=el.getBoundingClientRect(), de=document.documentElement;
+ de.style.setProperty('--vx',(r.left+r.width/2)+'px');de.style.setProperty('--vy',(r.top+r.height/2)+'px');
+ document.startViewTransition(apply)}
+if(MQ&&MQ.addEventListener)MQ.addEventListener('change',()=>{if(S.theme==='auto'){app.className=appCls();render('keep')}});
+new MutationObserver(()=>{if(S.theme==='auto'){app.className=appCls();render('keep')}}).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+/* ================= events ================= */
+document.addEventListener('click',e=>{
+ const th=e.target.closest('[data-theme-set],[data-theme-flip]');
+ if(th){const next=th.dataset.themeFlip?(isDark()?'light':'dark'):th.dataset.themeSet;setTheme(next,th);return}
+ if(e.target.closest('.splash')){leaveSplash();return}
+ const sh=e.target.closest('[data-act="sheet"]');if(sh){S.sheet=true;S.search=false;render('keep');return}
+ const t=e.target.closest('button,[data-open],.scrim');if(!t)return;
+ if(t.dataset.rail){go(t.dataset.rail==='search'?'search':t.dataset.rail);if(t.dataset.rail==='onb'){S.onb=0;render('fade')}return}
+ if(t.dataset.fav){e.stopPropagation();const id=t.dataset.fav;S.favs.has(id)?S.favs.delete(id):S.favs.add(id);if(S.screen==='saved'){render('keep');return}
+ host.querySelectorAll(`[data-fav="${id}"]`).forEach(b=>{b.setAttribute('aria-pressed',S.favs.has(id));b.classList.remove('bump');void b.offsetWidth;b.classList.add('bump')});return}
+ if(t.dataset.act==='sheet'){e.stopPropagation();S.sheet=true;S.search=false;render('keep');return}
+ if(t.dataset.v){const nv=t.dataset.v;if(nv===S.v&&!t.classList.contains('bcta'))return;S.v=nv;S.slide=0;if(S.screen==='detail')S.id=nv==='re'?'r1':'c1';
+  if(S.screen==='onb'){app.className=appCls();host.querySelectorAll('.vp').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===S.v));render('keep');return}
+  render(t.closest('.board .vtoggle')||t.closest('.seg')?'keep':'fade');return}
+ if(t.dataset.back){go(t.dataset.back,'pop');return}
+ if(t.dataset.go){go(t.dataset.go);return}
+ if(t.dataset.open){const id=t.dataset.open;S.v=id[0]==='c'?'car':'re';S.id=id;go('detail','push');return}
+ if(t.dataset.onb){S.onb=+t.dataset.onb;render('push');return}
+ if(t.dataset.role){S.role=t.dataset.role;host.querySelectorAll('.rp').forEach(b=>b.setAttribute('aria-pressed',b===t));const b=host.querySelector('.onb-foot [data-go]');if(b)b.dataset.go=S.role==='sell'?'home':'list';return}
+ if(t.dataset.sort){S.sort=+t.dataset.sort;render('keep');return}
+ if(t.dataset.ctab){S.calcTab=t.dataset.ctab;render('keep');return}
+ if(t.dataset.pct){S.cre.pct=+t.dataset.pct;host.querySelectorAll('[data-pct]').forEach(b=>b.setAttribute('aria-pressed',b===t));host.querySelector('#calcOut').innerHTML=calcOut();return}
+ if(t.dataset.freq){S.buy.freq=t.dataset.freq;host.querySelectorAll('[data-freq]').forEach(b=>b.setAttribute('aria-pressed',b===t));return}
+ if(t.dataset.sstep){S.sellStep=Math.min(6,+t.dataset.sstep);render(S.sellStep===6?'push':'keep');return}
+ if(t.dataset.bstep){S.buyStep=+t.dataset.bstep;render('keep');return}
+ if(t.dataset.silent){S.silent=t.dataset.silent==='1';host.querySelectorAll('.ch').forEach(b=>b.setAttribute('aria-pressed',b===t));return}
+ if(t.dataset.acct){if(S.screen!=='acct'){S.acct=t.dataset.acct;go('acct');return}S.acct=t.dataset.acct;render('keep');return}
+ if(t.dataset.sq){S.q=t.dataset.sq;const i=host.querySelector('#sxq');if(i)i.value=S.q;host.querySelector('#sxb').innerHTML=searchBody();return}
+ if(t.dataset.up){t.classList.add('done');t.querySelector('.ic').innerHTML=ic('check');t.querySelector('small').textContent='تم الرفع · PDF';return}
+ const a=t.dataset.act;
+ if(a==='search'){go('search');return}
+ if(a==='sxclose'){S.search=false;render('keep');return}
+ if(a==='close'){if(t.classList.contains('scrim')&&e.target.closest('[data-stop]'))return;S.sheet=false;render('keep');return}
+ if(t.classList.contains('opt')){const grp=t.parentElement;if(grp.dataset.multi){t.setAttribute('aria-pressed',t.getAttribute('aria-pressed')!=='true')}else{grp.querySelectorAll('.opt').forEach(b=>b.setAttribute('aria-pressed',b===t))}return}
+ if(t.classList.contains('sw')){const v=t.getAttribute('aria-pressed')!=='true';t.setAttribute('aria-pressed',v);if(a==='face')S.faceid=v;return}
+});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.dataset&&e.target.dataset.open){const id=e.target.dataset.open;S.v=id[0]==='c'?'car':'re';S.id=id;go('detail','push')}
+ if(e.key==='Escape'&&(S.search||S.sheet)){S.search=false;S.sheet=false;render('keep')}});
+host.addEventListener('input',e=>{const el=e.target;
+ if(el.id==='sxq'){S.q=el.value;host.querySelector('#sxb').innerHTML=searchBody();return}
+ if(el.id==='mini'){S.mini[S.v]=+el.value;const m=miniCalc();el.style.setProperty('--p',m.p+'%');host.querySelector('#mcalc .top b').innerHTML=`${fmt(m.val)}<span class="cur">ر.س</span>`;host.querySelector('#cmp').innerHTML=cmpRows(m);return}
+ if(el.id==='frng'){const p=(el.value-el.min)/(el.max-el.min)*100;el.style.setProperty('--p',p+'%');host.querySelector('#rv').textContent=fmt(+el.value);return}
+ const k=el.dataset.k;if(!k)return;const v=+el.value.replace(/[^\d]/g,'')||0;
+ const o=el.dataset.g==='buy'?S.buy:(S.v==='re'?S.cre:S.ccar);o[k]=v;host.querySelector('#calcOut').innerHTML=calcOut()});
+host.addEventListener('focusout',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k){e.target.value=fmt(+e.target.value.replace(/[^\d]/g,'')||0)}});
+render('fade');
+})();
+</script>
+<script>
+(function(){const ph=document.querySelector('.phone');
+ function fit(){if(innerWidth<=600){ph.style.zoom='';return}ph.style.zoom=Math.min(1,innerHeight/844,innerWidth/390)}
+ fit();addEventListener('resize',fit)})();
+</script>
+
+</body></html>
